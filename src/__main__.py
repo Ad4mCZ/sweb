@@ -25,6 +25,7 @@ def main():
     window = QMainWindow()
     window.setWindowTitle("Sweb - Prohlížeč pro seniory")
     window.resize(1024, 768)
+
     
     
 
