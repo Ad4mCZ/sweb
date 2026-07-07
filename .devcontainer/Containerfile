@@ -1,0 +1,16 @@
+FROM archlinux:latest
+
+# Aktualizace a instalace všech grafických a systémových závislostí
+RUN pacman -Syu --noconfirm && \
+    pacman -S --noconfirm \
+    base-devel python python-poetry git \
+    qt5-wayland nss nspr alsa-lib \
+    libxdamage libxcomposite libxrandr mesa \
+    libxtst libxss ttf-liberation ttf-dejavu \
+    sudo
+
+# Vytvoření běžného uživatele (vscode), pod kterým poběží editor
+RUN useradd -m -s /bin/bash vscode && \
+    echo "vscode ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+USER vscode

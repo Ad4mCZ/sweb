@@ -1,4 +1,17 @@
 {
     "python-envs.defaultEnvManager": "ms-python.python:poetry",
-    "python-envs.defaultPackageManager": "ms-python.python:poetry"
+    "python-envs.defaultPackageManager": "ms-python.python:poetry",
+    "python.languageServer": "Pylance",
+"editor.quickSuggestions": {
+    "other": "on",
+    "comments": "off",
+    "strings": "off"
+},
+"editor.suggestOnTriggerCharacters": true,
+"editor.wordBasedSuggestions": "matchingDocuments",
+"editor.inlineSuggest.enabled": false,
+"github.copilot.enable": {
+    "python": false
 }
+}
+
