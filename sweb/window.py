@@ -1,18 +1,35 @@
 import os
-from PyQt5.QtWidgets import QMainWindow, QToolBar, QAction, QSizePolicy, QWidget
+from PyQt5.QtWidgets import (
+    QToolBar,
+    QSizePolicy,
+    QHBoxLayout,
+    QToolButton,
+    QMainWindow,
+    QWidget,
+)
 from PyQt5.QtCore import QUrl, Qt, QSize
 from PyQt5.QtGui import QIcon
 from .browser import SimpleBrowserView
+from .settings import Settings
+from .module_manager import ModuleManager
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+
+        self.settings = Settings()
+        self.module_manager = ModuleManager(self)
+        self.module_manager.load_all_modules()
+
         self.setWindowTitle("Sweb - Prohlížeč pro seniory")
         self.resize(1280, 720)
 
         self.browser = SimpleBrowserView()
         self.browser.setUrl(QUrl("https://www.seznam.cz"))
+
+        self.browser.setZoomFactor(self.settings.get("web_zoom_factor"))
+
         self.setCentralWidget(self.browser)
 
         self._setup_navigation_bar()
@@ -21,105 +38,145 @@ class MainWindow(QMainWindow):
         self.browser.setUrl(QUrl("https://www.seznam.cz"))
 
     def show_first_menu(self):
-        self.nav_menu2.hide()
-        self.nav_menu1.show()
+        self.bookmarks_toolbar.hide()
+        self.main_toolbar.show()
 
     def show_second_menu(self):
-        self.nav_menu1.hide()
-        self.nav_menu2.show()
+        self.main_toolbar.hide()
+        self.bookmarks_toolbar.show()
 
     def _setup_navigation_bar(self):
         base_dir = os.path.dirname(os.path.abspath(__file__))
 
-        nav_style = """
-            QToolBar {
-                spacing: 15px; 
+        font_size = self.settings.get("ui_font_size")
+        theme = self.settings.get("color_theme")
+
+        if theme == "high_contrast":
+            bg_color = "#000000"
+            btn_bg = "#000000"
+            btn_text = "#ffff00"
+            btn_border = "#ffff00"
+            hover_bg = "#ffff00"
+            hover_text = "#000000"
+            hover_border = "#ffffff"
+            pressed_bg = "#ffffff"
+            pressed_text = "#000000"
+            pressed_border = "#000000"
+        else:
+            bg_color = "#f5f5f5"
+            btn_bg = "#e0e0e0"
+            btn_text = "#000000"
+            btn_border = "#b0b0b0"
+            hover_bg = "#fff9c4"
+            hover_text = "#000000"
+            hover_border = "#fbc02d"
+            pressed_bg = "#81d4fa"
+            pressed_text = "#000000"
+            pressed_border = "#0288d1"
+
+        nav_style = f"""
+            QToolBar {{
+                spacing: 0px; 
+                padding: 0px;
+                background-color: {bg_color}; 
+            }}
+            QToolButton {{
                 padding: 10px; 
-            }
-            QToolButton {
-                padding: 10px; 
-                background-color: #e0e0e0;
-                border: 1px solid #b0b0b0;
-                border-radius: 8px; 
-            }
-            QToolButton:hover {
-                background-color: #d0d0d0; 
-            }
-            QToolButton:pressed {
-                background-color: #a0a0a0;
-            }
+                background-color: {bg_color};
+                border: 1px solid {btn_border};
+                border-radius: 0px;
+                color: {btn_text};
+
+                font-size: {font_size}px;
+                font-weight: bold;
+                font-family: Arial, sans-serif;
+            }}
+            QToolButton:hover {{
+                background-color: {hover_bg}; 
+                border: 2px solid {hover_border};
+            }}
+            QToolButton:pressed {{
+                background-color: {pressed_bg};
+                border: 2px solid {pressed_border};
+            }}
         """
 
         # MENU 1
 
-        self.nav_menu1 = QToolBar("Navigace")
-        self.nav_menu1.setMovable(False)
-        self.nav_menu1.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
-        self.nav_menu1.setIconSize(QSize(48, 48))
-        self.nav_menu1.setStyleSheet(nav_style)
-        self.nav_menu1.setContextMenuPolicy(Qt.PreventContextMenu)
+        self.main_toolbar = QToolBar("Navigace")
+        self.main_toolbar.setMovable(False)
+        self.main_toolbar.setStyleSheet(nav_style)
+        self.main_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
 
-        font = self.nav_menu1.font()
-        font.setPointSize(16)
-        font.setBold(True)
-        self.nav_menu1.setFont(font)
-
-        self.addToolBar(self.nav_menu1)
+        self.addToolBar(self.main_toolbar)
 
         ##<a href="https://www.flaticon.com/free-icons/next" title="next icons">Next icons created by Roundicons - Flaticon</a>
 
-        # Tlacitko Menu2
-        menu2_btn = QAction(QIcon(os.path.join(base_dir, "icons", "menu.png")), "Menu 2", self)
-        menu2_btn.triggered.connect(self.show_second_menu)
-        self.nav_menu1.addAction(menu2_btn)
+        main_container = QWidget()
+        main_layout = QHBoxLayout(main_container)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
 
-        # Tlacitko zpet
-        back_btn = QAction(QIcon(os.path.join(base_dir, "icons", "previous.png")), "Zpět", self)
-        back_btn.triggered.connect(self.browser.back)
-        self.nav_menu1.addAction(back_btn)
+        class SeniorButton(QToolButton):
+            def enterEvent(self, event):
+                self.setStyleSheet(f"color: {hover_text};")
+                super().enterEvent(event)
 
-        # Tlacitko vpred
-        forward_btn = QAction(QIcon(os.path.join(base_dir,"icons", "next.png")), "Vpřed", self)
-        forward_btn.triggered.connect(self.browser.forward)
-        self.nav_menu1.addAction(forward_btn)
+            def leaveEvent(self, event):
+                self.setStyleSheet("")
+                super().leaveEvent(event)
 
-        # Tlacitko domu
-        home_btn = QAction(QIcon(os.path.join(base_dir,"icons", "home.png")), "Domů", self)
-        home_btn.triggered.connect(self.navigate_home)
-        self.nav_menu1.addAction(home_btn)
+            def mousePressEvent(self, event):
+                self.setStyleSheet(f"color: {pressed_text};")
+                super().mousePressEvent(event)
 
-        # Oddeleni, aby tlacitko pro vypnuti bylo vpravo
-        spacer = QWidget()
-        spacer.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-        self.nav_menu1.addWidget(spacer)
+            def mouseReleaseEvent(self, event):
+                if self.underMouse():
+                    self.setStyleSheet(f"color: {hover_text};")
+                else:
+                    self.setStyleSheet("")
+                super().mouseReleaseEvent(event)
 
-        # Tlacitko na vypnuti
-        close_btn = QAction(QIcon(os.path.join(base_dir,"icons", "cancel")), "Ukončit", self)
-        close_btn.triggered.connect(self.close)
-        self.nav_menu1.addAction(close_btn)
+        def add_button(layout, icon, text, action):
+            btn = SeniorButton()
+            btn.setText(text)
+            btn.setIcon(QIcon(os.path.join(base_dir, "icons", icon)))
+            btn.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+            btn.setIconSize(QSize(80, 80))
+            btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+            btn.clicked.connect(action)
+            layout.addWidget(btn)
+
+        add_button(main_layout, "menu.png", "Menu 2", self.show_second_menu)
+        add_button(main_layout, "previous.png", "Zpět", self.browser.back)
+        add_button(main_layout, "next.png", "Vpřed", self.browser.forward)
+        add_button(main_layout, "home.png", "Domů", self.navigate_home)
+        add_button(main_layout, "cancel.png", "Ukončit", self.close)
+
+        self.main_toolbar.addWidget(main_container)
 
         # MENU 2
 
-        self.nav_menu2 = QToolBar("Navigace")
-        self.nav_menu2.setMovable(False)
-        self.nav_menu2.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
-        self.nav_menu2.setIconSize(QSize(48, 48))
-        self.nav_menu2.setStyleSheet(nav_style)
-        self.nav_menu2.setFont(font)
-        self.nav_menu2.setContextMenuPolicy(Qt.PreventContextMenu)
+        self.bookmarks_toolbar = QToolBar("Navigace")
+        self.bookmarks_toolbar.setMovable(False)
+        self.bookmarks_toolbar.setStyleSheet(nav_style)
+        self.bookmarks_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
 
-        self.addToolBar(self.nav_menu2)
+        self.addToolBar(self.bookmarks_toolbar)
 
-        # Tlacitko Menu2
-        menu1_btn = QAction(QIcon(os.path.join(base_dir,"icons", "menu.png")), "Menu 1", self)
-        menu1_btn.triggered.connect(self.show_first_menu)
-        self.nav_menu2.addAction(menu1_btn)
+        bookmarks_container = QWidget()
+        bookmarks_layout = QHBoxLayout(bookmarks_container)
+        bookmarks_layout.setContentsMargins(0, 0, 0, 0)
+        bookmarks_layout.setSpacing(0)
 
-        # Tlacitko bookmark1
-        bookmark1_btn = QAction(QIcon(os.path.join(base_dir,"icons", "seznam .png")), "Seznam", self)
-        bookmark1_btn.triggered.connect(
-            lambda: self.browser.setUrl(QUrl("https://www.seznam.cz"))
+        add_button(bookmarks_layout, "menu.png", "Menu 1", self.show_first_menu)
+        add_button(
+            bookmarks_layout,
+            "seznam.png",
+            "Seznam.cz",
+            lambda: self.browser.setUrl(QUrl("https://www.seznam.cz")),
         )
-        self.nav_menu2.addAction(bookmark1_btn)
 
-        self.nav_menu2.hide()
+        self.bookmarks_toolbar.addWidget(bookmarks_container)
+
+        self.bookmarks_toolbar.hide()
