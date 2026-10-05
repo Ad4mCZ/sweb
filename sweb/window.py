@@ -1,5 +1,5 @@
 import os
-from PyQt5.QtWidgets import (
+from PyQt6.QtWidgets import (
     QToolBar,
     QSizePolicy,
     QHBoxLayout,
@@ -7,8 +7,8 @@ from PyQt5.QtWidgets import (
     QMainWindow,
     QWidget,
 )
-from PyQt5.QtCore import QUrl, Qt, QSize
-from PyQt5.QtGui import QIcon
+from PyQt6.QtCore import QUrl, Qt, QSize
+from PyQt6.QtGui import QIcon
 from .browser import SimpleBrowserView
 from .settings import Settings
 from .module_manager import ModuleManager
@@ -106,7 +106,7 @@ class MainWindow(QMainWindow):
         self.main_toolbar = QToolBar("Navigace")
         self.main_toolbar.setMovable(False)
         self.main_toolbar.setStyleSheet(nav_style)
-        self.main_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
+        self.main_toolbar.setContextMenuPolicy(Qt.ContextMenuPolicy.PreventContextMenu)
 
         self.addToolBar(self.main_toolbar)
 
@@ -141,9 +141,9 @@ class MainWindow(QMainWindow):
             btn = SeniorButton()
             btn.setText(text)
             btn.setIcon(QIcon(os.path.join(base_dir, "icons", icon)))
-            btn.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+            btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
             btn.setIconSize(QSize(80, 80))
-            btn.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+            btn.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
             btn.clicked.connect(action)
             layout.addWidget(btn)
 
@@ -160,7 +160,7 @@ class MainWindow(QMainWindow):
         self.bookmarks_toolbar = QToolBar("Navigace")
         self.bookmarks_toolbar.setMovable(False)
         self.bookmarks_toolbar.setStyleSheet(nav_style)
-        self.bookmarks_toolbar.setContextMenuPolicy(Qt.PreventContextMenu)
+        self.bookmarks_toolbar.setContextMenuPolicy(Qt.ContextMenuPolicy.PreventContextMenu)
 
         self.addToolBar(self.bookmarks_toolbar)
 

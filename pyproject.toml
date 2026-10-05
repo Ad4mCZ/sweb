@@ -9,10 +9,9 @@ license = "MIT"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
-    "pyqt5 (>=5.15.11,<6.0.0)",
-    "pyqtwebengine (>=5.15.7,<6.0.0)"
+    "pyqt6",
+    "PyQt6-WebEngine"
 ]
-
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
