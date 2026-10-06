@@ -1,4 +1,4 @@
-from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtWebEngineWidgets import QWebEngineView
 
 
 class SimpleBrowserView(QWebEngineView):
