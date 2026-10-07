@@ -19,7 +19,7 @@ class Bookmarks:
             os.makedirs(self.icons_dir)
 
         self.bookmarks_path = os.path.join(data_location, "bookmarks.json")
-        #print(f"Bookmarks location: {self.bookmarks_path}")
+        # print(f"Bookmarks location: {self.bookmarks_path}")
 
         # zakladni zalozky po prvnim spusteni
         self.default_bookmarks = {
@@ -70,7 +70,7 @@ class Bookmarks:
 
             if not os.path.exists(icon_path):
                 api_url = f"https://www.google.com/s2/favicons?domain={domain}&sz=128"
-                urllib.request.urlretrieve(api_url,icon_path)
+                urllib.request.urlretrieve(api_url, icon_path)
             return icon_path
         except Exception as e:
             print(f"Error while retrieving icon for {url}, error {e}")
