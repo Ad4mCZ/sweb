@@ -1,10 +1,12 @@
 from PyQt6.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtWebEngineCore import QWebEngineProfile
 
 
 class SimpleBrowserView(QWebEngineView):
     def __init__(self):
         super().__init__()
         self.temp_view = None
+  
 
     def createWindow(self, windowType):
         self.temp_view = QWebEngineView()

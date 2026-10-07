@@ -6,11 +6,13 @@ from PyQt6.QtWidgets import (
     QToolButton,
     QMainWindow,
     QWidget,
+    QInputDialog,
 )
 from PyQt6.QtCore import QUrl, Qt, QSize
 from PyQt6.QtGui import QIcon
 from .browser import SimpleBrowserView
 from .settings import Settings
+from .bookmarks import Bookmarks
 from .module_manager import ModuleManager
 
 
@@ -19,6 +21,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.settings = Settings()
+        self.bookmarks = Bookmarks()
         self.module_manager = ModuleManager(self)
         self.module_manager.load_all_modules()
 
@@ -36,6 +39,26 @@ class MainWindow(QMainWindow):
 
     def navigate_home(self):
         self.browser.setUrl(QUrl("https://www.seznam.cz"))
+
+    def get_icon_path(self, icon_name):
+
+        if os.path.isabs(icon_name):
+            return icon_name
+        
+        system_path = os.path.join("/usr/share/vut/sweb/icons", icon_name)
+        local_path = os.path.join(os.path.dirname(__file__), "icons", icon_name)
+
+        if os.path.exists(system_path):
+            return system_path
+        return local_path
+
+    def open_search(self):
+        text, ok = QInputDialog.getText(
+            self, "Vyhledávání", "Co chcete na internetu najít?"
+        )
+        if ok and text:
+            search_url = f"https://search.seznam.cz/?q={text}"
+            self.browser.setUrl(QUrl(search_url))
 
     def show_first_menu(self):
         self.bookmarks_toolbar.hide()
@@ -137,21 +160,33 @@ class MainWindow(QMainWindow):
                     self.setStyleSheet("")
                 super().mouseReleaseEvent(event)
 
-        def add_button(layout, icon, text, action):
+        def add_button(layout, icon_filename, text, action):
             btn = SeniorButton()
             btn.setText(text)
-            btn.setIcon(QIcon(os.path.join(base_dir, "icons", icon)))
+            btn.setIcon(QIcon(self.get_icon_path(icon_filename)))
+            # tohle pak zakomentovat, aby tam nebyli popisky, jen ikonka
             btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
             btn.setIconSize(QSize(80, 80))
-            btn.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+            btn.setSizePolicy(
+                QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred
+            )
             btn.clicked.connect(action)
             layout.addWidget(btn)
 
         add_button(main_layout, "menu.png", "Menu 2", self.show_second_menu)
-        add_button(main_layout, "previous.png", "Zpět", self.browser.back)
-        add_button(main_layout, "next.png", "Vpřed", self.browser.forward)
-        add_button(main_layout, "home.png", "Domů", self.navigate_home)
+        # add_button(main_layout, "previous.png", "Zpět", self.browser.back)
+        # add_button(main_layout, "next.png", "Vpřed", self.browser.forward)
+        # add_button(main_layout, "home.png", "Domů", self.navigate_home)
         add_button(main_layout, "cancel.png", "Ukončit", self.close)
+
+        for bm in self.bookmarks.get_first_menu():
+            icon_path = self.bookmarks.get_icon_for_url(bm["url"])
+            add_button(
+                main_layout,
+                icon_path,
+                bm["name"],
+                lambda _=False, u=bm["url"]: self.browser.setUrl(QUrl(u)),
+            )
 
         self.main_toolbar.addWidget(main_container)
 
@@ -160,7 +195,9 @@ class MainWindow(QMainWindow):
         self.bookmarks_toolbar = QToolBar("Navigace")
         self.bookmarks_toolbar.setMovable(False)
         self.bookmarks_toolbar.setStyleSheet(nav_style)
-        self.bookmarks_toolbar.setContextMenuPolicy(Qt.ContextMenuPolicy.PreventContextMenu)
+        self.bookmarks_toolbar.setContextMenuPolicy(
+            Qt.ContextMenuPolicy.PreventContextMenu
+        )
 
         self.addToolBar(self.bookmarks_toolbar)
 
@@ -170,12 +207,17 @@ class MainWindow(QMainWindow):
         bookmarks_layout.setSpacing(0)
 
         add_button(bookmarks_layout, "menu.png", "Menu 1", self.show_first_menu)
-        add_button(
-            bookmarks_layout,
-            "seznam.png",
-            "Seznam.cz",
-            lambda: self.browser.setUrl(QUrl("https://www.seznam.cz")),
-        )
+
+        for bm in self.bookmarks.get_second_menu():
+            icon_path = self.bookmarks.get_icon_for_url(bm["url"])
+            add_button(
+                bookmarks_layout,
+                icon_path,
+                bm["name"],
+                lambda _=False, u=bm["url"]: self.browser.setUrl(QUrl(u)),
+            )
+
+        add_button(bookmarks_layout, "search.png", "Hledat", self.open_search)
 
         self.bookmarks_toolbar.addWidget(bookmarks_container)
 

@@ -1,15 +1,24 @@
 import os
 import json
+from PyQt6.QtCore import QStandardPaths
+
 
 class Settings:
     def __init__(self):
-        self.base_dir = os.path.dirname(os.path.abspath(__file__))
-        self.config_path = os.path.join(self.base_dir, "config.json")
+
+        # cesta ke slozce pro konfiguraci (na Linuxu ~/.config/vut/sweb, na Macu ~/Library/Preferences/vut/sweb)
+        config_location = QStandardPaths.writableLocation(
+            QStandardPaths.StandardLocation.AppConfigLocation
+        )
+        if not os.path.exists(config_location):
+            os.makedirs(config_location)
+
+        self.config_path = os.path.join(config_location, "config.json")
 
         self.default_config = {
             "ui_font_size": 24,
             "web_zoom_factor": 1.5,
-            "color_theme": "default"
+            "color_theme": "default",
         }
 
         self.data = self.load()

@@ -23,6 +23,9 @@ from .window import MainWindow
 def main():
     app = QApplication(sys.argv)
 
+    app.setApplicationName("sweb")
+    app.setOrganizationName("vut")
+
     window = MainWindow()
     window.show()
 
