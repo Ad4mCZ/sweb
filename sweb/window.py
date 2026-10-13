@@ -110,7 +110,7 @@ class MainWindow(QMainWindow):
             QToolButton {{
                 padding: 10px; 
                 background-color: {bg_color};
-                border: 1px solid {btn_border};
+                border: 2px solid {btn_border};
                 border-radius: 0px;
                 color: {btn_text};
 

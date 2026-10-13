@@ -1,5 +1,7 @@
 # Sweb - Senior-Friendly Web Browser
 
+[![cs](https://img.shields.io/badge/lang-cs-green?style=for-the-badge)](https://github.com/Ad4mCZ/sweb/blob/main/README.cs.md)
+
 **Sweb** is a modular and accessible web browser designed specifically for seniors. Developed as part of a diploma thesis at the Faculty of Electrical Engineering and Communication, Brno University of Technology, the application is built with Python, PyQt6, and QtWebEngine. The browser focuses on eliminating common frustrations older adults face when navigating the modern web by providing a distraction-free, simplified, and safe environment.
 
 ## 🌟 Key Features
