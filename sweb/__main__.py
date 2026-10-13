@@ -3,19 +3,18 @@ import os
 from PyQt6.QtWidgets import QApplication
 
 # Na host pc zadat  xhost +local:
-
 # Aplikujeme záchranná opatření pouze pokud běžíme ve vývojovém kontejneru
-# if os.environ.get("REMOTE_CONTAINERS"):
-# os.environ["QTWEBENGINE_DISABLE_SANDBOX"] = "1"
-# sys.argv.extend([
-#     "--disable-gpu",
-#     "--disable-software-rasterizer",
-#     "--disable-webgl"
-# ])
-
-# Vypnutí sandboxu musí zůstat pro běh v kontejneru
 if os.environ.get("REMOTE_CONTAINERS"):
     os.environ["QTWEBENGINE_DISABLE_SANDBOX"] = "1"
+sys.argv.extend(
+    [
+        "--disable-gpu",
+        # "--disable-software-rasterizer",
+        "--disable-dev-shm-usage",
+        # "--disable-webgl"
+        "--disable-features=UseHardwareVideoDecoder",
+    ]
+)
 
 from .window import MainWindow
 
@@ -27,7 +26,7 @@ def main():
     app.setOrganizationName("vut")
 
     window = MainWindow()
-    window.show()
+    window.showFullScreen()
 
     sys.exit(app.exec())
 

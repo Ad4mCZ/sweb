@@ -35,3 +35,7 @@ class ModuleManager:
         for module in self.modules:
             actions.extend(module.get_toolbar_actions())
         return actions
+
+    def setup_all_browsers(self, browser):
+        for module in self.modules:
+            module.setup_browser(browser)

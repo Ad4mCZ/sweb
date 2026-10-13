@@ -5,3 +5,6 @@ class SwebModule:
 
     def get_toolbar_actions(self):
         return []
+
+    def setup_browser(self, browser):
+        pass

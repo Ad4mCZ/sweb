@@ -20,6 +20,8 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        self.setWindowFlags(Qt.WindowType.FramelessWindowHint)
+
         self.settings = Settings()
         self.bookmarks = Bookmarks()
         self.module_manager = ModuleManager(self)
@@ -30,6 +32,8 @@ class MainWindow(QMainWindow):
 
         self.browser = SimpleBrowserView()
         self.browser.setUrl(QUrl("https://www.seznam.cz"))
+
+        self.module_manager.setup_all_browsers(self.browser)
 
         self.browser.setZoomFactor(self.settings.get("web_zoom_factor"))
 
@@ -165,7 +169,7 @@ class MainWindow(QMainWindow):
             btn.setText(text)
             btn.setIcon(QIcon(self.get_icon_path(icon_filename)))
             # tohle pak zakomentovat, aby tam nebyli popisky, jen ikonka
-            btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+            #btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
             btn.setIconSize(QSize(80, 80))
             btn.setSizePolicy(
                 QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred
