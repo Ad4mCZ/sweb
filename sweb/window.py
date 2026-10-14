@@ -7,6 +7,11 @@ from PyQt6.QtWidgets import (
     QMainWindow,
     QWidget,
     QInputDialog,
+    QDialog,
+    QVBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
 )
 from PyQt6.QtCore import QUrl, Qt, QSize
 from PyQt6.QtGui import QIcon
@@ -14,6 +19,76 @@ from .browser import SimpleBrowserView
 from .settings import Settings
 from .bookmarks import Bookmarks
 from .module_manager import ModuleManager
+
+
+class SearchDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Vyhledávání")
+        self.setModal(True)
+        self.setMinimumWidth(500)  # sirka okna
+
+        # stylovani okna, obri písmo a velka tlacitka
+        self.setStyleSheet("""
+            QDialog {
+                background-color: #f5f5f5;
+            }
+            QLabel {
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 10px;
+                color: #000000;
+            }
+            QLineEdit {
+                font-size: 24px;
+                padding: 10px;
+                border: 2px solid #aaaaaa;
+                background-color: white;
+                color: #000000;
+            }
+            QPushButton {
+                font-size: 20px;
+                font-weight: bold;
+                padding: 15px;
+                background-color: #e0e0e0;
+                border: 2px solid #aaaaaa;
+                color: #000000;
+            }
+            QPushButton#searchBtn {
+                background-color: #ff2a2a;
+                color: white;
+                border: 2px solid #cc0000;
+            }
+        """)
+
+        layout = QVBoxLayout(self)
+
+        # hlavni text
+        label = QLabel("Co chcete na internetu najít?")
+        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(label)
+
+        # textove pole
+        self.input_field = QLineEdit()
+        layout.addWidget(self.input_field)
+
+        # tlacitka
+        btn_layout = QHBoxLayout()
+
+        cancel_btn = QPushButton("Zrušit")
+        cancel_btn.clicked.connect(self.reject)  # Zavře okno s výsledkem "Zrušeno"
+
+        search_btn = QPushButton("Hledat")
+        search_btn.setObjectName("searchBtn")  # aplikace stylu styl
+        search_btn.clicked.connect(self.accept)  # Zavře okno s výsledkem "Potvrzeno"
+
+        btn_layout.addWidget(cancel_btn)
+        btn_layout.addWidget(search_btn)
+
+        layout.addLayout(btn_layout)
+
+    def get_text(self):
+        return self.input_field.text().strip()
 
 
 class MainWindow(QMainWindow):
@@ -48,7 +123,7 @@ class MainWindow(QMainWindow):
 
         if os.path.isabs(icon_name):
             return icon_name
-        
+
         system_path = os.path.join("/usr/share/vut/sweb/icons", icon_name)
         local_path = os.path.join(os.path.dirname(__file__), "icons", icon_name)
 
@@ -57,12 +132,15 @@ class MainWindow(QMainWindow):
         return local_path
 
     def open_search(self):
-        text, ok = QInputDialog.getText(
-            self, "Vyhledávání", "Co chcete na internetu najít?"
-        )
-        if ok and text:
-            search_url = f"https://search.seznam.cz/?q={text}"
-            self.browser.setUrl(QUrl(search_url))
+        dialog = SearchDialog(self)
+        
+        # Pokud uživatel klikne na "Hledat" a okno se úspěšně potvrdí
+        if dialog.exec() == QDialog.DialogCode.Accepted:
+            text = dialog.get_text()
+            if text:
+                search_url = f"https://search.seznam.cz/?q={text}"
+                self.browser.setUrl(QUrl(search_url))
+
 
     def show_first_menu(self):
         self.bookmarks_toolbar.hide()
@@ -169,7 +247,7 @@ class MainWindow(QMainWindow):
             btn.setText(text)
             btn.setIcon(QIcon(self.get_icon_path(icon_filename)))
             # tohle pak zakomentovat, aby tam nebyli popisky, jen ikonka
-            #btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
+            # btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
             btn.setIconSize(QSize(80, 80))
             btn.setSizePolicy(
                 QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred
