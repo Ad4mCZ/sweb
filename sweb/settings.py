@@ -1,6 +1,8 @@
 import os
 import json
 from PyQt6.QtCore import QStandardPaths
+from PyQt6.QtWidgets import QMessageBox
+from .utils import show_critical_error
 
 
 class Settings:
@@ -14,6 +16,7 @@ class Settings:
             os.makedirs(config_location)
 
         self.config_path = os.path.join(config_location, "config.json")
+        print(f"Config location: {self.config_path}")
 
         self.default_config = {
             "ui_font_size": 24,
@@ -29,6 +32,7 @@ class Settings:
             return self.default_config.copy()
 
         try:
+            # raise Exception("Test chyby")
             with open(self.config_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
 
@@ -43,6 +47,11 @@ class Settings:
 
                 return data
         except Exception as e:
+            show_critical_error(
+                title="Kritická chyba konfigurace",
+                message="Chyba při čtení konfiguračního souboru!\n\nAplikaci nelze bezpečně spustit a bude ukončena.",
+                error_detail=str(e),
+            )
             print(f"Error while reading the config file, error: {e}")
             return self.default_config.copy()
 
@@ -51,6 +60,11 @@ class Settings:
             with open(self.config_path, "w", encoding="utf-8") as f:
                 json.dump(data_to_save, f, indent=4, ensure_ascii=False)
         except Exception as e:
+            show_critical_error(
+                title="Kritická chyba konfigurace",
+                message="Chyba při ukládání konfiguračního souboru!\n\nAplikaci nelze bezpečně spustit a bude ukončena.",
+                error_detail=str(e),
+            )
             print(f"Error while saving the configuration: {e}")
 
     def get(self, key):

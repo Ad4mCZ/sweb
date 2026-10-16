@@ -3,6 +3,8 @@ import json
 from PyQt6.QtCore import QStandardPaths
 import urllib.request
 from urllib.parse import urlparse
+from PyQt6.QtWidgets import QMessageBox
+from .utils import show_critical_error
 
 
 class Bookmarks:
@@ -19,7 +21,7 @@ class Bookmarks:
             os.makedirs(self.icons_dir)
 
         self.bookmarks_path = os.path.join(data_location, "bookmarks.json")
-        # print(f"Bookmarks location: {self.bookmarks_path}")
+        print(f"Bookmarks location: {self.bookmarks_path}")
 
         # zakladni zalozky po prvnim spusteni
         self.default_bookmarks = {
@@ -46,6 +48,11 @@ class Bookmarks:
             with open(self.bookmarks_path, "r", encoding="utf-8") as f:
                 return json.load(f)
         except Exception as e:
+            show_critical_error(
+                title="Kritická chyba konfigurace",
+                message="Chyba při čtení souboru se záložkami!\n\nAplikaci nelze bezpečně spustit a bude ukončena.",
+                error_detail=str(e),
+            )
             print(f"Error while reading the bookmarks file, error {e}")
             return self.bookmarks_path.copy()
 
@@ -54,6 +61,11 @@ class Bookmarks:
             with open(self.bookmarks_path, "w", encoding="utf-8") as f:
                 json.dump(data_to_save, f, indent=4, ensure_ascii=False)
         except Exception as e:
+            show_critical_error(
+                title="Kritická chyba konfigurace",
+                message="Chyba při ukládání souboru se záložkami!\n\nAplikaci nelze bezpečně spustit a bude ukončena.",
+                error_detail=str(e),
+            )
             print(f"Error while saving bookmarks, error {e}")
 
     def get_first_menu(self):
@@ -62,7 +74,7 @@ class Bookmarks:
     def get_second_menu(self):
         return self.data.get("second_menu", [])
 
-    def get_icon_for_url(self, url, fallback_icon="menu.png"):
+    def get_icon_for_url(self, url, fallback_icon="star.png"):
         try:
             domain = urlparse(url).netloc
             icon_filename = f"{domain}.png"
