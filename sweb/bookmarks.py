@@ -54,7 +54,7 @@ class Bookmarks:
                 error_detail=str(e),
             )
             print(f"Error while reading the bookmarks file, error {e}")
-            return self.bookmarks_path.copy()
+            return self.default_bookmarks.copy()
 
     def _save_all(self, data_to_save):
         try:
