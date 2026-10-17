@@ -133,14 +133,14 @@ class MainWindow(QMainWindow):
 
     def open_search(self):
         dialog = SearchDialog(self)
-        
+
         # Pokud uživatel klikne na "Hledat" a okno se úspěšně potvrdí
         if dialog.exec() == QDialog.DialogCode.Accepted:
             text = dialog.get_text()
             if text:
-                search_url = f"https://search.seznam.cz/?q={text}"
+                base_url = self.settings.get("search_url")
+                search_url = base_url.format(text)
                 self.browser.setUrl(QUrl(search_url))
-
 
     def show_first_menu(self):
         self.bookmarks_toolbar.hide()

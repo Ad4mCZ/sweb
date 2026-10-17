@@ -22,6 +22,7 @@ class Settings:
             "ui_font_size": 24,
             "web_zoom_factor": 1.5,
             "color_theme": "default",
+            "search_url": "https://search.seznam.cz/?q={}",
         }
 
         self.data = self.load()
