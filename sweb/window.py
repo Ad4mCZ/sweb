@@ -124,7 +124,7 @@ class MainWindow(QMainWindow):
         if os.path.isabs(icon_name):
             return icon_name
 
-        system_path = os.path.join("/usr/share/vut/sweb/icons", icon_name)
+        system_path = os.path.join("/usr/share/icons/sweb", icon_name)
         local_path = os.path.join(os.path.dirname(__file__), "icons", icon_name)
 
         if os.path.exists(system_path):
