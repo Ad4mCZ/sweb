@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=SWeb
+Comment=Web browser for seniors
+Exec=sweb
+Icon=web-browser
+Type=Application
+Terminal=false
+Categories=Network;WebBrowser;
+MimeType=x-scheme-handler/http;x-scheme-handler/https;text/html;
