@@ -1,33 +1,15 @@
-# This is an example PKGBUILD file. Use this as a start to creating your own,
-# and remove these comments. For more information, see 'man PKGBUILD'.
-# NOTE: Please fill out the license field for your package! If it is unknown,
-# then please put 'unknown'.
-
-# Maintainer: Your Name <youremail@domain.com>
+# Maintainer: Your Name <272843@vutbr.cz>
 pkgname='sweb'
 pkgver=0.1.0
 pkgrel=1
-epoch=
 pkgdesc="Web browser for seniors"
 arch=('any')
 url="https://github.com/Ad4mCZ/sweb"
 license=('MIT')
-groups=()
 depends=('python>=3.14' 'python-pyqt6' 'python-pyqt6-webengine')
 makedepends=('git' 'python-poetry-core' 'python-build' 'python-installer')
-checkdepends=()
-optdepends=()
-provides=()
-conflicts=()
-replaces=()
-backup=()
-options=()
-install=
-changelog=
 source=("$pkgname-$pkgver.tar.gz::https://github.com/Ad4mCZ/sweb/archive/refs/tags/v$pkgver.tar.gz")
-noextract=()
 sha256sums=('SKIP')
-validpgpkeys=()
 
 build() {
     cd $pkgname-$pkgver
