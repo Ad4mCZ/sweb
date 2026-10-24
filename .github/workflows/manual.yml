@@ -9,7 +9,9 @@ jobs:
       image: archlinux:latest
     steps:
     - uses: actions/checkout@v7
+    - name: Prepare system
+      run: pacman -Sy core base-devel sudo 
     - name: Set up user
-      run: groupadd packager && useradd packager -g packager && pacman -S sudo && usermod -aG wheel packager && su packager
+      run: groupadd packager && useradd packager -g packager && usermod -aG wheel packager && su packager
     - name: Build
       run: cd packaging && sudo makepkg -s && ls
