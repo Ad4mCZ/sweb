@@ -19,7 +19,7 @@ jobs:
           set +e
           rpmbuild -br packaging/sweb.spec
           exit_code=$?
-          if[$exit_code -ne 0] && [$exit_code -ne 11]; then exit $exit_code; fi
+          if [ $exit_code -ne 0 ] && [ $exit_code -ne 11 ]; then exit $exit_code; fi
       - name: Install build require
         run: |
           dnf -y builddep ~/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm
