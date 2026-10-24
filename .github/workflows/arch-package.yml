@@ -5,6 +5,8 @@ on:
 jobs:
   create-package:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     container:
       image: archlinux:latest
     steps:
@@ -23,8 +25,8 @@ jobs:
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: sweb-0.1.0-1-any.pkg.tar.zst
-        asset_name: mything
+        file: packaging/sweb-*.pkg.tar.zst
+        file_glob: true
         tag: refs/tags/v0.1.0
         overwrite: true
         draft: true
