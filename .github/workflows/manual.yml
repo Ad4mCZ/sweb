@@ -12,6 +12,6 @@ jobs:
     - name: Prepare system
       run: pacman --noconfirm -Sy base-devel sudo
     - name: Add nobody to sudoers
-      run: echo "${BUILDUSER:-nobody} ALL=(root) NOPASSWD: ALL" >>/etc/sudoers || return 1
+      run: echo "${BUILDUSER:-nobody} ALL=(root) NOPASSWD{0,:} ALL >> /etc/sudoers || return 1"
     - name: Build
       run: chown nobody packaging && cd packaging && sudo -u nobody makepkg -s && ls
