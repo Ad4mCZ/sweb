@@ -12,4 +12,4 @@ jobs:
     - name: Prepare system
       run: pacman --noconfirm -Sy base-devel sudo
     - name: Build
-      run: cd packaging && sudo -u nobody makepkg -s && ls
+      run: chown nobody packaging && cd packaging && sudo -u nobody makepkg -s && ls
