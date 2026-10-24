@@ -34,7 +34,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ~/rpmbuild/RPMS/**/sweb-*.rpm
+          file: /github/home/rpmbuild/RPMS/noarch/sweb-*.rpm
           file_glob: true
           tag: refs/tags/v0.1.0
           overwrite: true
