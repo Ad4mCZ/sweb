@@ -15,11 +15,11 @@ jobs:
           dnf -y install rpmdevtools
           cd packaging
           dnf builddep -y sweb.spec
-          rpmbuild -br --define "_topdir $PWD" sweb.spec
           echo "PRINTING DIRECTORY"
           ls
           pwd
           echo "END PRINT"
+          rpmbuild -br --define "_topdir $PWD" sweb.spec
           dnf builddep -y SRPMS/*.buildreqs.nosrc.rpm
       - name: Build
         run: |
