@@ -20,13 +20,21 @@ jobs:
           spectool -g -R packaging/*.spec
       - name: Generate build requires
         run: |
-          set +e
           rpmbuild -br packaging/sweb.spec
-          exit_code=$?
-          if [ $exit_code -ne 0 ] && [ $exit_code -ne 11 ]; then exit $exit_code; fi
       - name: Install build require
         run: |
           dnf -y builddep ~/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm
       - name: Build
         run: |
           rpmbuild -ba packaging/sweb.spec
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ~/rpmbuild/RPMS/**/sweb-*.rpm
+          file_glob: true
+          tag: refs/tags/v0.1.0
+          overwrite: true
+          draft: false
+          prerelease: true
+          body: "Working release ${{github.ref}}"
