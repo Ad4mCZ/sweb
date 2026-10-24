@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v7
     - name: Prepare system
-      run: pacman -Sy base-devel sudo 
+      run: pacman --noconfirm -Sy base-devel sudo
     - name: Set up user
       run: groupadd packager && useradd packager -g packager && usermod -aG wheel packager && su packager
     - name: Build
