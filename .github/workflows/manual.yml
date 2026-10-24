@@ -8,5 +8,5 @@ jobs:
     container:
       image: archlinux:latest
     steps:
-    - name: Testing
-      run: echo "Test" && pwd
+    - name: Print os
+      run: cat /etc/os-release
