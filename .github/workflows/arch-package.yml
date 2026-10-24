@@ -29,5 +29,6 @@ jobs:
         file_glob: true
         tag: refs/tags/v0.1.0
         overwrite: true
-        draft: true
-        body: "Testing release package"
+        draft: false
+        prerelease: true
+        body: "Working release ${{github.ref}}"
