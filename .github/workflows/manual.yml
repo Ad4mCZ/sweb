@@ -12,6 +12,6 @@ jobs:
     - name: Prepare system
       run: pacman --noconfirm -Sy base-devel sudo
     - name: Set up user
-      run: groupadd packager && useradd packager -g packager && usermod -aG wheel packager && su packager
+      run: groupadd packager && useradd package-user -g packager && usermod -aG wheel package-user
     - name: Build
-      run: cd packaging && sudo makepkg -s && ls
+      run: su package-user && cd packaging && sudo makepkg -s && ls
