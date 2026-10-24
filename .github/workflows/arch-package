@@ -1,4 +1,4 @@
-name: Manual workflow
+name: Arch package
 on:
   workflow_dispatch:
 
@@ -19,3 +19,13 @@ jobs:
         cd packaging
         sudo -u nobody makepkg --noconfirm 
         ls
+    - name: Upload binaries to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: sweb-0.1.0-1-any.pkg.tar.zst
+        asset_name: mything
+        tag: refs/tags/v0.1.0
+        overwrite: true
+        draft: true
+        body: "Testing release package"
