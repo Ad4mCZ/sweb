@@ -10,6 +10,8 @@ jobs:
       image: fedora:latest
     steps:
       - uses: actions/checkout@v7
+      - name: Prepare
+        run: dnf install -y rpmdevtools
       - name: Build
         run: |
           cd packaging
