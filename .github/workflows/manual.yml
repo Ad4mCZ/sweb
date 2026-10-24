@@ -1,0 +1,12 @@
+name: Manual workflow
+on:
+  workflow_dispatch:
+
+jobs:
+  greet:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+    steps:
+    - name: Testing
+      run: echo "Test" && pwd
