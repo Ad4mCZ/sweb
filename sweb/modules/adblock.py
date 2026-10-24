@@ -1,64 +1,70 @@
-import json
+from __future__ import annotations
+
+import logging
 import os
+from typing import TYPE_CHECKING
+
 from PyQt6.QtCore import QStandardPaths
-from PyQt6.QtWebEngineCore import QWebEngineUrlRequestInterceptor, QWebEngineProfile
+from PyQt6.QtWebEngineCore import (
+    QWebEngineProfile,
+    QWebEngineUrlRequestInfo,
+    QWebEngineUrlRequestInterceptor,
+)
+
+from sweb.json_store import JsonStore
 from sweb.module_base import SwebModule
+
+if TYPE_CHECKING:
+    from sweb.browser import SimpleBrowserView
+    from sweb.window import MainWindow
+
+log = logging.getLogger(__name__)
+
+DEFAULT_BLOCKED_DOMAINS = [
+    "doubleclick.net",
+    "googlesyndication.com",
+    "google-analytics.com",
+    "googletagmanager.com",
+    "clarity.ms",
+    "facebook.com/tr",
+    "imrworldwide.com",
+    "chartbeat.net",
+    "imedia.cz",
+    "criteo.com",
+    "adform.net",
+]
 
 
 class AdBlockInterceptor(QWebEngineUrlRequestInterceptor):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
-        self.blocked_domains = self._load_blocked_domains()
-
-    def _load_blocked_domains(self):
         config_dir = QStandardPaths.writableLocation(
             QStandardPaths.StandardLocation.AppConfigLocation
         )
-        adblock_file = os.path.join(config_dir, "adblock.json")
-        default_domains = [
-            "doubleclick.net",
-            "googlesyndication.com",
-            "google-analytics.com",
-            "googletagmanager.com",
-            "clarity.ms",
-            "facebook.com/tr",
-            "imrworldwide.com",
-            "chartbeat.net",
-            "imedia.cz",
-            "criteo.com",
-            "adform.net",
-        ]
+        # chyba v adblock.json neni kriticka - pouziji se vychozi domeny
+        self.store = JsonStore(
+            file_path=os.path.join(config_dir, "adblock.json"),
+            defaults={"blocked_domains": DEFAULT_BLOCKED_DOMAINS},
+            file_label="souboru adblocku",
+            critical=False,
+        )
+        self.blocked_domains: list[str] = self.store.get("blocked_domains", [])
 
-        if not os.path.exists(adblock_file):
-            os.makedirs(config_dir, exist_ok=True)
-            try:
-                with open(adblock_file, "w", encoding="utf-8") as f:
-                    json.dump({"blocked_domains": default_domains}, f, indent=4)
-            except Exception:
-                pass
-            return default_domains
-
-        try:
-            with open(adblock_file, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                return data.get("blocked_domains", default_domains)
-        except Exception:
-            return default_domains
-
-    def interceptRequest(self, info):
+    def interceptRequest(self, info: QWebEngineUrlRequestInfo) -> None:
         url = info.requestUrl().toString()
         for domain in self.blocked_domains:
             if domain in url:
-                print(f"AdBlock is working: blocked {domain}")
+                log.debug("AdBlock blocked %s", domain)
                 info.block(True)
                 return
 
 
 class AdBlockModule(SwebModule):
-    def __init__(self, main_window):
+    def __init__(self, main_window: MainWindow) -> None:
         super().__init__(main_window)
         self.interceptor = AdBlockInterceptor()
 
-    def setup_browser(self, browser):
+    def setup_browser(self, browser: SimpleBrowserView) -> None:
         profile = QWebEngineProfile.defaultProfile()
-        profile.setUrlRequestInterceptor(self.interceptor)
+        if profile is not None:
+            profile.setUrlRequestInterceptor(self.interceptor)

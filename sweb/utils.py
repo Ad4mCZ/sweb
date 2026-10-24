@@ -1,9 +1,15 @@
 import sys
-from PyQt6.QtWidgets import QMessageBox
+from typing import NoReturn
+
 from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QMessageBox
+
+from .theme import error_dialog_stylesheet
 
 
-def show_critical_error(title, message, error_detail=""):
+def show_critical_error(
+    title: str, message: str, error_detail: str = ""
+) -> NoReturn:
     msg = QMessageBox()
     msg.setIcon(QMessageBox.Icon.Critical)
     msg.setWindowTitle(title)
@@ -12,23 +18,8 @@ def show_critical_error(title, message, error_detail=""):
     if error_detail:
         msg.setDetailedText(f"Technický detail chyby: \n{error_detail}")
 
-    msg.setStyleSheet("""
-        QMessageBox {
-            background-color: #f5f5f5;
-        }
-        QLabel {
-            font-size: 24px;
-            color: black;
-        }
-        QPushButton {
-            font-size: 20px;
-            font-weight: bold;
-            padding: 15px 40px;
-            background-color: #ff2a2a;
-            color: white;
-            border: 2px solid #cc0000;
-        }
-    """)
+    # styl je spolecny s ostatnimi dialogy, viz theme.py
+    msg.setStyleSheet(error_dialog_stylesheet())
 
     msg.setWindowFlags(Qt.WindowType.FramelessWindowHint)
     msg.showFullScreen()
