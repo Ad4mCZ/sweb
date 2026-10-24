@@ -9,5 +9,7 @@ jobs:
       image: archlinux:latest
     steps:
     - uses: actions/checkout@v7
+    - name: Set up user
+      run: groupadd packager && useradd packager -g packager && pacman -S sudo && usermod -aG wheel packager && su packager
     - name: Build
-      run: cd packaging && makepkg -s && ls
+      run: cd packaging && sudo makepkg -s && ls
