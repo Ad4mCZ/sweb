@@ -10,12 +10,14 @@ jobs:
       image: fedora:latest
     steps:
       - uses: actions/checkout@v7
-      - name: Prepare
-        run: dnf install -y rpmdevtools
+      - name: Prepare dependencies
+        run: |
+          cd packaging
+          rpmbuild -br --define "_topdir $PWD/rpmbuild" sweb.spec
+          dnf -y builddep rpmbuild/SRPMS/*.buildreqs.nosrc.rpm
       - name: Build
         run: |
           cd packaging
-          dnf builddep -y sweb.spec
           spectool -g -R sweb.spec
           rpmbuild -ba sweb.spec
           ls
