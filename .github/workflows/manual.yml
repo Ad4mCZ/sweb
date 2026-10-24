@@ -10,9 +10,12 @@ jobs:
     steps:
     - uses: actions/checkout@v7
     - name: Prepare system
-      run: pacman --noconfirm -Sy base-devel sudo
-    - name: Add nobody to sudoers
-      run: |
-        echo "nobody ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers || return 1 
+      run: pacman -Sy base-devel sudo --noconfirm
     - name: Build
-      run: chown nobody packaging && cd packaging && sudo -u nobody makepkg -s --noconfirm && ls
+      run: |
+        source packaging/PKGBUILD
+        pacman -S --needed --noconfirm "${depends[@]}" "${makedepends[@]}"
+        chown -R nobody packaging
+        cd packaging
+        sudo -u nobody makepkg --noconfirm 
+        ls
