@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  greet:
+  create-package:
     runs-on: ubuntu-latest
     container:
       image: archlinux:latest
