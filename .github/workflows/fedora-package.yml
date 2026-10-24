@@ -12,6 +12,7 @@ jobs:
       - uses: actions/checkout@v7
       - name: Prepare dependencies
         run: |
+          dnf -y install rpmdevtools
           cd packaging
           rpmbuild -br --define "_topdir $PWD/rpmbuild" sweb.spec
           dnf -y builddep rpmbuild/SRPMS/*.buildreqs.nosrc.rpm
