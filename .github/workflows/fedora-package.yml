@@ -14,11 +14,16 @@ jobs:
         run: |
           dnf -y install rpmdevtools
           cd packaging
-          rpmbuild -br --define "_topdir $PWD/rpmbuild" sweb.spec
-          dnf -y builddep rpmbuild/SRPMS/*.buildreqs.nosrc.rpm
+          dnf builddep -y sweb.spec
+          rpmbuild -br --define "_topdir $PWD" sweb.spec
+          echo "PRINTING DIRECTORY"
+          ls
+          pwd
+          echo "END PRINT"
+          dnf builddep -y SRPMS/*.buildreqs.nosrc.rpm
       - name: Build
         run: |
           cd packaging
           spectool -g -R sweb.spec
-          rpmbuild -ba sweb.spec
+          rpmbuild -ba --define "_topdir $PWD" sweb.spec
           ls
