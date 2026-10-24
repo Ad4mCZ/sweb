@@ -11,7 +11,5 @@ jobs:
     - uses: actions/checkout@v7
     - name: Prepare system
       run: pacman --noconfirm -Sy base-devel sudo
-    - name: Set up user
-      run: groupadd packager && useradd package-user -g packager && usermod -aG wheel package-user
     - name: Build
-      run: su package-user && cd packaging && sudo makepkg -s && ls
+      run: cd packaging && sudo -u nobody makepkg -s && ls
