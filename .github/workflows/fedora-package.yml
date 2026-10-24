@@ -1,0 +1,19 @@
+name: Fedora package
+on:
+  workflow_dispatch: 
+jobs:
+  fedora-package:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    container:
+      image: fedora:latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build
+        run: |
+          cd packaging
+          dnf builddep -y sweb.spec
+          spectool -g -R sweb.spec
+          rpmbuild -ba sweb.spec
+          ls
