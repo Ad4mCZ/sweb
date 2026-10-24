@@ -8,5 +8,6 @@ jobs:
     container:
       image: archlinux:latest
     steps:
-    - name: Print os
-      run: cat /etc/os-release
+    - uses: actions/checkout@v7
+    - name: Build
+      run: cd packaging && makepkg -s && ls
