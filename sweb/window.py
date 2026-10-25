@@ -7,13 +7,13 @@ from urllib.parse import quote_plus
 from PyQt6.QtCore import QEvent, QSize, Qt, QUrl
 from PyQt6.QtGui import QEnterEvent, QIcon, QMouseEvent
 from PyQt6.QtWidgets import (
-    QDialog,
     QHBoxLayout,
     QLabel,
     QLineEdit,
     QMainWindow,
     QPushButton,
     QSizePolicy,
+    QStackedWidget,
     QToolBar,
     QToolButton,
     QVBoxLayout,
@@ -30,41 +30,53 @@ from .theme import get_theme, nav_stylesheet, search_dialog_stylesheet
 ButtonSpec = tuple[str, str, Callable[[], object]]
 
 
-class SearchDialog(QDialog):
-    def __init__(self, parent: QWidget | None = None) -> None:
+class SearchWidget(QWidget):
+    def __init__(
+        self,
+        on_submit: Callable[[], object],
+        on_cancel: Callable[[], object],
+        parent: QWidget | None = None,
+    ) -> None:
         super().__init__(parent)
-        self.setWindowTitle("Vyhledávání")
-        self.setModal(True)
-        self.setMinimumWidth(500)  # sirka okna
-
-        # stylovani okna, obri písmo a velka tlacitka (definice v theme.py)
+        self.setObjectName("searchScreen")
+        # nutne u QWidget, aby Qt vykreslilo barvu pozadi ze stylesheetu
+        self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
         self.setStyleSheet(search_dialog_stylesheet())
 
         layout = QVBoxLayout(self)
+        layout.setContentsMargins(80, 60, 80, 60)
+        layout.setSpacing(30)
 
-        # hlavni text
+        layout.addStretch(1)
+
         label = QLabel("Co chcete na internetu najít?")
         label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(label)
 
-        # textove pole
         self.input_field = QLineEdit()
+        self.input_field.returnPressed.connect(on_submit)
         layout.addWidget(self.input_field)
 
-        # tlacitka
         btn_layout = QHBoxLayout()
+        btn_layout.setSpacing(20)
 
         cancel_btn = QPushButton("Zrušit")
-        cancel_btn.clicked.connect(self.reject)  # Zavře okno s výsledkem "Zrušeno"
+        cancel_btn.clicked.connect(on_cancel)
 
         search_btn = QPushButton("Hledat")
-        search_btn.setObjectName("searchBtn")  # aplikace stylu styl
-        search_btn.clicked.connect(self.accept)  # Zavře okno s výsledkem "Potvrzeno"
+        search_btn.setObjectName("searchBtn")
+        search_btn.clicked.connect(on_submit)
 
         btn_layout.addWidget(cancel_btn)
         btn_layout.addWidget(search_btn)
 
         layout.addLayout(btn_layout)
+
+        layout.addStretch(2)
+
+    def reset_and_focus(self) -> None:
+        self.input_field.clear()
+        self.input_field.setFocus()
 
     def get_text(self) -> str:
         return self.input_field.text().strip()
@@ -126,7 +138,7 @@ class MainWindow(QMainWindow):
         self.resize(1280, 720)
 
         self.browser = SimpleBrowserView()
-        self.browser.setUrl(QUrl("https://www.seznam.cz"))
+        self.browser.setUrl(QUrl(self.settings.get("home_url")))
 
         self.module_manager.setup_all_browsers(self.browser)
 
@@ -138,12 +150,27 @@ class MainWindow(QMainWindow):
             lambda _url, z=zoom: self.browser.setZoomFactor(z)
         )
 
-        self.setCentralWidget(self.browser)
+        # QStackedWidget prepina mezi prohlizecem a vyhledavaci obrazovkou
+        # v hlavni casti okna, zatimco horni lista s tlacitky zustava viditelna
+        self.search_widget = SearchWidget(
+            on_submit=self._submit_search,
+            on_cancel=self._close_search,
+            parent=self,
+        )
+        self.central_stack = QStackedWidget(self)
+        self.central_stack.addWidget(self.browser)
+        self.central_stack.addWidget(self.search_widget)
+        self.setCentralWidget(self.central_stack)
 
         self._setup_navigation_bar()
 
+    def _open_url(self, url: str) -> None:
+        """Otevre zadanou URL a zajisti, ze je misto vyhledavani videt prohlizec."""
+        self.browser.setUrl(QUrl(url))
+        self.central_stack.setCurrentWidget(self.browser)
+
     def navigate_home(self) -> None:
-        self.browser.setUrl(QUrl("https://www.seznam.cz"))
+        self._open_url(self.settings.get("home_url"))
 
     def get_icon_path(self, icon_name: str) -> str:
         if os.path.isabs(icon_name):
@@ -157,20 +184,27 @@ class MainWindow(QMainWindow):
         return local_path
 
     def open_search(self) -> None:
-        dialog = SearchDialog(self)
+        """Prepne hlavni plochu pod listou na vyhledavaci obrazovku."""
+        self.central_stack.setCurrentWidget(self.search_widget)
+        self.search_widget.reset_and_focus()
 
-        # Pokud uživatel klikne na "Hledat" a okno se úspěšně potvrdí
-        if dialog.exec() == QDialog.DialogCode.Accepted:
-            text = dialog.get_text()
-            if text:
-                base_url = self.settings.get("search_url")
-                # quote_plus escapuje znaky jako &, #, % nebo mezery do platneho dotazu v URL
-                search_url = base_url.format(quote_plus(text))
-                self.browser.setUrl(QUrl(search_url))
+    def _submit_search(self) -> None:
+        """Spusti vyhledavani zadaneho textu a prepne zpet na prohlizec."""
+        text = self.search_widget.get_text()
+        if text:
+            base_url = self.settings.get("search_url")
+            # quote_plus escapuje znaky jako &, #, % nebo mezery do platneho dotazu v URL
+            search_url = base_url.format(quote_plus(text))
+            self._open_url(search_url)
+
+    def _close_search(self) -> None:
+        """Zavre vyhledavaci obrazovku a vrati zobrazeni webove stranky."""
+        self.central_stack.setCurrentWidget(self.browser)
 
     def show_first_menu(self) -> None:
         self.bookmarks_toolbar.hide()
         self.main_toolbar.show()
+        self.central_stack.setCurrentWidget(self.browser)
 
     def show_second_menu(self) -> None:
         self.main_toolbar.hide()
@@ -195,7 +229,7 @@ class MainWindow(QMainWindow):
             name="Navigace",
             bookmarks=self.bookmarks.get_first_menu(),
             buttons_before=[
-                ("menu.png", "Menu 2", self.show_second_menu),
+                ("menu1.png", "Menu 2", self.show_second_menu),
                 # ("previous.png", "Zpět", self.browser.back),
                 # ("next.png", "Vpřed", self.browser.forward),
                 # ("home.png", "Domů", self.navigate_home),
@@ -204,12 +238,21 @@ class MainWindow(QMainWindow):
         )
 
         # MENU 2 - druha sada zalozek + vyhledavani
-        # (prepinac menu je vlevo, "Hledat" az za zalozkami vpravo)
+        # pozici tlacitka "Hledat" (pred nebo za zalozkami) urcuje "search_button_position" v config.json
+        search_btn: ButtonSpec = ("search.png", "Hledat", self.open_search)
+        menu2_before: list[ButtonSpec] = [("menu2.png", "Menu 1", self.show_first_menu)]
+        menu2_after: list[ButtonSpec] = []
+
+        if self.settings.get("search_button_position") == "before":
+            menu2_before.append(search_btn)
+        else:
+            menu2_after.append(search_btn)
+
         self.bookmarks_toolbar = self._create_toolbar(
             name="Navigace",
             bookmarks=self.bookmarks.get_second_menu(),
-            buttons_before=[("menu.png", "Menu 1", self.show_first_menu)],
-            buttons_after=[("search.png", "Hledat", self.open_search)],
+            buttons_before=menu2_before,
+            buttons_after=menu2_after,
         )
 
         # po spusteni je videt jen MENU 1, MENU 2 se zobrazi tlacitkem "Menu 2"
@@ -258,7 +301,7 @@ class MainWindow(QMainWindow):
                 layout,
                 "star.png",
                 bm["name"],
-                lambda _=False, u=bm["url"]: self.browser.setUrl(QUrl(u)),
+                lambda _=False, u=bm["url"]: self._open_url(u),
             )
             icon_path = self.bookmarks.get_icon_for_url(
                 bm["url"],

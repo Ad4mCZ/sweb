@@ -105,29 +105,31 @@ def _accent_button_rule(selector: str) -> str:
 
 
 def search_dialog_stylesheet() -> str:
-    """Stylesheet pro SearchDialog: obri pismo, velke pole a tlacitka."""
+    """Stylesheet pro celoobrazovkovou vyhledavaci stranku (SearchWidget):
+    obri pismo, siroke textove pole pres obrazovku a velka tlacitka.
+    """
     c = DIALOG_COLORS
     return f"""
-        QDialog {{
+        QWidget#searchScreen {{
             background-color: {c["bg"]};
         }}
         QLabel {{
-            font-size: {DIALOG_TEXT_SIZE}px;
+            font-size: 32px;
             font-weight: bold;
             margin-bottom: 10px;
             color: {c["text"]};
         }}
         QLineEdit {{
-            font-size: {DIALOG_TEXT_SIZE}px;
-            padding: 10px;
-            border: 2px solid {c["border"]};
+            font-size: 32px;
+            padding: 20px;
+            border: 3px solid {c["border"]};
             background-color: {c["input_bg"]};
             color: {c["text"]};
         }}
         QPushButton {{
-            font-size: {DIALOG_BUTTON_SIZE}px;
+            font-size: 26px;
             font-weight: bold;
-            padding: 15px;
+            padding: 20px;
             background-color: {c["button_bg"]};
             border: 2px solid {c["border"]};
             color: {c["text"]};
@@ -139,16 +141,32 @@ def error_dialog_stylesheet() -> str:
     """Stylesheet pro celoobrazovkovou kritickou chybu (utils.show_critical_error)."""
     c = DIALOG_COLORS
     return f"""
-        QMessageBox {{
+        QDialog#errorScreen {{
             background-color: {c["bg"]};
         }}
-        QLabel {{
-            font-size: {DIALOG_TEXT_SIZE}px;
+        QLabel#errorTitle {{
+            font-size: 36px;
+            font-weight: bold;
+            color: {c["accent_border"]};
+        }}
+        QLabel#errorMessage {{
+            font-size: 28px;
             color: {c["text"]};
         }}
-        QPushButton {{
-            font-size: {DIALOG_BUTTON_SIZE}px;
-            font-weight: bold;
-            padding: 15px 40px;
+        QLabel#errorDetail {{
+            font-size: 20px;
+            padding: 20px;
+            background-color: {c["input_bg"]};
+            border: 2px solid {c["border"]};
+            color: {c["text"]};
+            font-family: monospace;
         }}
-    """ + _accent_button_rule("QPushButton")
+        QPushButton {{
+            font-size: 24px;
+            font-weight: bold;
+            padding: 20px 50px;
+            background-color: {c["button_bg"]};
+            border: 2px solid {c["border"]};
+            color: {c["text"]};
+        }}
+    """ + _accent_button_rule("QPushButton#exitBtn")

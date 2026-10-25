@@ -16,7 +16,10 @@ class Settings(JsonStore):
                 "ui_font_size": 24,
                 "web_zoom_factor": 1.5,
                 "color_theme": "default",
+                "home_url": "https://www.seznam.cz",
                 "search_url": "https://search.seznam.cz/?q={}",
+                # pozice tlacitka "Hledat" v Menu 2: "before" (pred zalozkami) nebo "after" (za zalozkami)
+                "search_button_position": "after",
             },
             file_label="konfiguračního souboru",
         )
