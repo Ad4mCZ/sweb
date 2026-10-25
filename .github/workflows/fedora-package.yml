@@ -1,6 +1,5 @@
 name: Fedora package
 on:
-  workflow_dispatch: 
   push:
     tags: ["v*"]
 jobs:
@@ -14,10 +13,10 @@ jobs:
       - uses: actions/checkout@v7
       - name: Update spec version
         run: |
-          sed -i "s/^Version:.*/Version:        ${GITHUB_REF_NAME}/" packaging/sweb.spec
+          sed -i "0,/^Version:/s/^Version:.*/Version:        ${GITHUB_REF_NAME#v}/" packaging/sweb.spec
       - name: Prepare dependencies
         run: |
-          dnf -y install rpmdevtools rpm-build python3-devel
+          dnf -y install rpmdevtools rpm-build python3-devel pyproject-rpm-macros
           dnf -y builddep packaging/sweb.spec
 
       - name: Download sources
@@ -26,13 +25,13 @@ jobs:
           spectool -g -R packaging/*.spec
       - name: Generate build requires
         run: |
-          set +e
-          rpmbuild -br packaging/sweb.spec
-          exit_code=$?
-          if [ $exit_code -ne 0 ] && [ $exit_code -ne 11 ]; then exit $rc; fi
-      - name: Install build require
-        run: |
-          dnf -y builddep ~/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm
+          for i in 1 2 3; do
+            exit_code=0
+            rpmbuild -br packaging/sweb.spec || exit_code=$?
+            [ "$exit_code" -eq 0 ] && break
+            [ "$exit_code" -ne 11 ] && exit "$exit_code"
+            dnf -y builddep ~/rpmbuild/SRPMS/*.buildreqs.nosrc.rpm
+          done
       - name: Build
         run: |
           rpmbuild -ba packaging/sweb.spec
