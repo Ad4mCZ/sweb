@@ -18,8 +18,7 @@ jobs:
           dnf -y builddep packaging/sweb.spec
       - name: Update spec version
         run: |
-          VERSION=0.2.0
-          sed -i "s/^Version:.*/Version:        ${VERSION}/" packaging/sweb.spec
+          sed -i "s/^Version:.*/Version:        ${GITHUB_REF_NAME}/" packaging/sweb.spec
       - name: Download sources
         run: |
           rpmdev-setuptree
@@ -42,7 +41,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: /github/home/rpmbuild/RPMS/noarch/sweb-*.rpm
           file_glob: true
-          tag: refs/tags/v0.2.0
+          tag: ${{github.ref}}
           overwrite: true
           draft: false
           prerelease: false
