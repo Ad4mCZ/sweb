@@ -104,3 +104,12 @@ Sweb nabízí různé vizuální motivy, aby vyhověl různým zrakovým potřeb
 ### Vysoký kontrast
 *(Speciální režim maximalizující viditelnost textu a prvků pro uživatele se zrakovým postižením.)*  
 ![Vysoký kontrast](images/hc.png)
+
+## 📄 Licence a poděkování
+Tento projekt je licencován pod **GNU General Public License v3.0 (GPL-3.0-or-later)** — podrobnosti naleznete v souboru [LICENSE](LICENSE).
+
+* **PyQt6 & PyQt6-WebEngine:** Licencováno pod GNU GPL v3 (Riverbank Computing Limited).
+* **Qt 6 & Qt WebEngine:** Licencováno pod GNU LGPL v3 / GPL v3 (The Qt Company).
+* **Chromium:** Licencováno pod 3-Clause BSD licencí a příslušnými open-source licencemi dílčích knihoven.
+* **Ikony:** Navigační ikony ve složce `sweb/icons/` vytvořil [Roundicons - Flaticon](https://www.flaticon.com).
+

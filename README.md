@@ -105,3 +105,12 @@ Sweb provides different visual themes to accommodate varying visual needs. The a
 *(A specialized mode maximizing text and element visibility for users with visual impairments.)*  
 ![High Contrast](images/hc.png)
 
+## 📄 License & Attribution
+This project is licensed under the **GNU General Public License v3.0 (GPL-3.0-or-later)** — see the [LICENSE](LICENSE) file for details.
+
+* **PyQt6 & PyQt6-WebEngine:** Licensed under the GNU GPL v3 by Riverbank Computing Limited.
+* **Qt 6 & Qt WebEngine:** Licensed under the GNU LGPL v3 / GPL v3 by The Qt Company.
+* **Chromium:** Licensed under the 3-Clause BSD License and respective open-source licenses of its submodules.
+* **Icons:** Navigation icons in `sweb/icons/` created by [Roundicons - Flaticon](https://www.flaticon.com).
+
+
