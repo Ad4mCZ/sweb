@@ -22,7 +22,7 @@ jobs:
         pacman -S --needed --noconfirm "${depends[@]}" "${makedepends[@]}"
     - name: Update pkgver
       run: |
-        sed "s/^pkgver=.*/pkgver=${GITHUB_REF_NAME}/" packaging/PKGBUILD
+        sed "s/^pkgver=.*/pkgver=${GITHUB_REF_NAME#v}/" packaging/PKGBUILD
     - name: Build
       run: |
         chown -R nobody packaging
