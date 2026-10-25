@@ -12,13 +12,14 @@ jobs:
       image: fedora:latest
     steps:
       - uses: actions/checkout@v7
+      - name: Update spec version
+        run: |
+          sed -i "s/^Version:.*/Version:        ${GITHUB_REF_NAME}/" packaging/sweb.spec
       - name: Prepare dependencies
         run: |
           dnf -y install rpmdevtools rpm-build python3-devel
           dnf -y builddep packaging/sweb.spec
-      - name: Update spec version
-        run: |
-          sed -i "s/^Version:.*/Version:        ${GITHUB_REF_NAME#v}/" packaging/sweb.spec
+
       - name: Download sources
         run: |
           rpmdev-setuptree
