@@ -36,7 +36,6 @@ Web browser designed for ease of use with intention to bridge the gap between se
 %pyproject_save_files sweb
 desktop-file-install --dir=%{buildroot}%{_datadir}/applications sweb.desktop
 install -Dm644 -t %{buildroot}%{_datadir}/icons/sweb sweb/icons/*
-install -Dm644 sweb/config.json -t %{buildroot}%{_sysconfdir}/sweb
 
 %check
 export QT_QPA_PLATFORM=offscreen
@@ -46,8 +45,5 @@ export QT_QPA_PLATFORM=offscreen
 %{_bindir}/sweb
 %{_datadir}/applications/sweb.desktop
 %{_datadir}/icons/sweb/*
-%{_sysconfdir}/sweb/config.json
 
 %changelog
-* Sun Oct 18 2026 vassili
-- 
