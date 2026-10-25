@@ -5,7 +5,7 @@ Summary:        Simple web browser
 
 License:        MIT
 URL:            https://github.com/Ad4mCZ/sweb
-Source0:        %{url}/archive/refs/tags/%{version}.tar.gz
+Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz
 
 BuildArch:      noarch
 
