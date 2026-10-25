@@ -1,6 +1,8 @@
 name: Arch package
 on:
   workflow_dispatch:
+  push:
+    tags: ["v*"]
 
 jobs:
   create-package:
@@ -12,23 +14,27 @@ jobs:
     steps:
     - uses: actions/checkout@v7
     - name: Prepare system
-      run: pacman -Sy base-devel sudo --noconfirm
-    - name: Build
+      run: |
+        pacman -Sy base-devel sudo --noconfirm
+    - name: Get build dependencies
       run: |
         source packaging/PKGBUILD
         pacman -S --needed --noconfirm "${depends[@]}" "${makedepends[@]}"
+    - name: Update pkgver
+      run: |
+        sed "s/^pkgver=.*/pkgver=${GITHUB_REF_NAME}/" packaging/PKGBUILD
+    - name: Build
+      run: |
         chown -R nobody packaging
         cd packaging
         sudo -u nobody makepkg --noconfirm 
-        ls
-    - name: Upload binaries to release
+    - name: Upload artifact
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: packaging/sweb-*.pkg.tar.zst
         file_glob: true
-        tag: refs/tags/v0.1.0
+        tag: ${{github.ref}}
         overwrite: true
         draft: false
         prerelease: true
-        body: "Working release ${{github.ref}}"
