@@ -1,9 +1,7 @@
 name: Arch package
 on:
-  workflow_dispatch:
   push:
     tags: ["v*"]
-
 jobs:
   create-package:
     runs-on: ubuntu-latest
@@ -15,7 +13,7 @@ jobs:
     - uses: actions/checkout@v7
     - name: Update pkgver
       run: |
-        sed -i "s/^pkgver=.*/pkgver=${GITHUB_REF_NAME}/" packaging/PKGBUILD
+        sed -i "0,/^pkgver=/s/^pkgver=.*/pkgver=${GITHUB_REF_NAME#v}/" packaging/PKGBUILD
     - name: Prepare system
       run: |
         pacman -Sy base-devel sudo --noconfirm
