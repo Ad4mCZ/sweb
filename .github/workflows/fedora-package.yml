@@ -19,7 +19,7 @@ jobs:
       - name: Update spec version
         run: |
           VERSION=0.2.0
-          sed "s/^Version:.*/Version:        ${VERSION}/" packaging/sweb.spec
+          sed -i "s/^Version:.*/Version:        ${VERSION}/" packaging/sweb.spec
       - name: Download sources
         run: |
           rpmdev-setuptree
