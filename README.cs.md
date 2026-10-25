@@ -41,6 +41,59 @@ Příklad `config.json`:
 }
 ```
 
+Příklad `bookmarks.json`:
+```json
+{
+    "first_menu": [
+        {
+            "name": "Seznam",
+            "url": "https://www.seznam.cz"
+        },
+        {
+            "name": "ČT24",
+            "url": "https://ct24.ceskatelevize.cz"
+        },
+        {
+            "name": "Počasí",
+            "url": "https://www.in-pocasi.cz"
+        }
+    ],
+    "second_menu": [
+        {
+            "name": "Deník",
+            "url": "https://www.denik.cz"
+        },
+        {
+            "name": "Novinky",
+            "url": "https://www.novinky.cz"
+        },
+        {
+            "name": "Lékárna",
+            "url": "https://www.lekarna.cz"
+        }
+    ]
+}
+```
+
+Příklad `adblock.json`:
+```json
+{
+    "blocked_domains": [
+        "doubleclick.net",
+        "googlesyndication.com",
+        "google-analytics.com",
+        "googletagmanager.com",
+        "clarity.ms",
+        "facebook.com/tr",
+        "imrworldwide.com",
+        "chartbeat.net",
+        "imedia.cz",
+        "criteo.com",
+        "adform.net"
+    ]
+}
+```
+
 ## 🎨 Vizuální režimy
 Sweb nabízí různé vizuální motivy, aby vyhověl různým zrakovým potřebám. Níže uvedené animace demonstrují výchozí zobrazení rozhraní, stejně jako zřetelnou vizuální odezvu poskytovanou při **najetí myší (hover)** a **kliknutí (click)**.
 

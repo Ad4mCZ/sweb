@@ -12,8 +12,7 @@
 * **Cross-Platform Stability:** Hardened Chromium engine configurations to ensure smooth performance across environments, from Linux to macOS.
 
 ## ⚙️ Configuration Files
-The browser is fully customizable via JSON files, keeping user data and preferences separated from the source code. These files are securely stored in the OS-specific application configuration directory (Linux ~/.config/vut/sweb and ~/.local/share/vut/sweb; macOS 
- ~/Library/Application Support/vut/sweb and ~/Library/Preferences/vut/sweb):
+The browser is fully customizable via JSON files, keeping user data and preferences separated from the source code. These files are securely stored in the OS-specific application configuration directory (Linux: `~/.config/vut/sweb` and `~/.local/share/vut/sweb`; macOS: `~/Library/Application Support/vut/sweb` and `~/Library/Preferences/vut/sweb`):
 
 * `config.json` - Manages general browser settings, UI states, and theme configurations.
 * `bookmarks.json` - Stores pre-defined favorite websites (e.g., Seznam, ČT24, Počasí) displayed directly on the main screen.
@@ -39,6 +38,59 @@ Example `config.json`:
     "home_url": "https://www.seznam.cz",
     "search_url": "https://search.seznam.cz/?q={}",
     "search_button_position": "after"
+}
+```
+
+Example `bookmarks.json`:
+```json
+{
+    "first_menu": [
+        {
+            "name": "Seznam",
+            "url": "https://www.seznam.cz"
+        },
+        {
+            "name": "ČT24",
+            "url": "https://ct24.ceskatelevize.cz"
+        },
+        {
+            "name": "Počasí",
+            "url": "https://www.in-pocasi.cz"
+        }
+    ],
+    "second_menu": [
+        {
+            "name": "Deník",
+            "url": "https://www.denik.cz"
+        },
+        {
+            "name": "Novinky",
+            "url": "https://www.novinky.cz"
+        },
+        {
+            "name": "Lékárna",
+            "url": "https://www.lekarna.cz"
+        }
+    ]
+}
+```
+
+Example `adblock.json`:
+```json
+{
+    "blocked_domains": [
+        "doubleclick.net",
+        "googlesyndication.com",
+        "google-analytics.com",
+        "googletagmanager.com",
+        "clarity.ms",
+        "facebook.com/tr",
+        "imrworldwide.com",
+        "chartbeat.net",
+        "imedia.cz",
+        "criteo.com",
+        "adform.net"
+    ]
 }
 ```
 
