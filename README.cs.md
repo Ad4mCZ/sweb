@@ -18,13 +18,36 @@ Prohlížeč je plně přizpůsobitelný pomocí JSON souborů, což udržuje u�
 * `bookmarks.json` - Ukládá předdefinované oblíbené webové stránky (např. Seznam, ČT24, Počasí) zobrazené přímo na hlavní obrazovce.
 * `adblock.json` - Obsahuje snadno udržovatelný a rozšiřitelný seznam blokovaných reklamních a sledovacích domén.
 
+### Možnosti nastavení v `config.json`
+
+| Klíč | Výchozí hodnota | Popis |
+|------|-----------------|-------|
+| `ui_font_size` | `24` | Velikost písma (v `px`) popisků tlačítek v navigační liště. |
+| `web_zoom_factor` | `1.5` | Měřítko přiblížení webových stránek (`1.0` = 100 %, `1.5` = 150 %). |
+| `color_theme` | `"default"` | Barevné schéma navigační lišty: `"default"` nebo `"high_contrast"`. |
+| `home_url` | `"https://www.seznam.cz"` | Výchozí domovská stránka načtená po spuštění prohlížeče. |
+| `search_url` | `"https://search.seznam.cz/?q={}"` | Šablona URL vyhledávače (`{}` se nahradí hledaným výrazem). |
+| `search_button_position` | `"after"` | Pozice tlačítka **Hledat** v Menu 2 vůči záložkám: `"before"` (před) nebo `"after"` (za). |
+
+Příklad `config.json`:
+```json
+{
+    "ui_font_size": 24,
+    "web_zoom_factor": 1.5,
+    "color_theme": "default",
+    "home_url": "https://www.seznam.cz",
+    "search_url": "https://search.seznam.cz/?q={}",
+    "search_button_position": "after"
+}
+```
+
 ## 🎨 Vizuální režimy
 Sweb nabízí různé vizuální motivy, aby vyhověl různým zrakovým potřebám. Níže uvedené animace demonstrují výchozí zobrazení rozhraní, stejně jako zřetelnou vizuální odezvu poskytovanou při **najetí myší (hover)** a **kliknutí (click)**.
 
 ### Výchozí barevné schéma
 *(Standardní, klidný vizuální motiv navržený pro každodenní použití.)*  
-![Výchozí barevné schéma](images/default_gif.gif)
+![Výchozí barevné schéma](images/default.png)
 
 ### Vysoký kontrast
 *(Speciální režim maximalizující viditelnost textu a prvků pro uživatele se zrakovým postižením.)*  
-![Vysoký kontrast](images/highcontrast_gif.gif)
+![Vysoký kontrast](images/hc.png)

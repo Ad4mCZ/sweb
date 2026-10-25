@@ -19,14 +19,37 @@ The browser is fully customizable via JSON files, keeping user data and preferen
 * `bookmarks.json` - Stores pre-defined favorite websites (e.g., Seznam, ČT24, Počasí) displayed directly on the main screen.
 * `adblock.json` - Contains a maintainable, easily extensible list of blocked advertising and tracking domains.
 
+### `config.json` Options
+
+| Key | Default | Description |
+|-----|---------|-------------|
+| `ui_font_size` | `24` | Font size (in `px`) of button labels in the navigation bar. |
+| `web_zoom_factor` | `1.5` | Default zoom level for web pages (`1.0` = 100%, `1.5` = 150%). |
+| `color_theme` | `"default"` | Visual theme of the navigation bar: `"default"` or `"high_contrast"`. |
+| `home_url` | `"https://www.seznam.cz"` | Initial page loaded on startup and when navigating home. |
+| `search_url` | `"https://search.seznam.cz/?q={}"` | Search engine URL template (`{}` is replaced with the URL-encoded query). |
+| `search_button_position` | `"after"` | Position of the Search button in Menu 2 relative to bookmarks: `"before"` or `"after"`. |
+
+Example `config.json`:
+```json
+{
+    "ui_font_size": 24,
+    "web_zoom_factor": 1.5,
+    "color_theme": "default",
+    "home_url": "https://www.seznam.cz",
+    "search_url": "https://search.seznam.cz/?q={}",
+    "search_button_position": "after"
+}
+```
+
 ## 🎨 Visual Modes
 Sweb provides different visual themes to accommodate varying visual needs. The animations below demonstrate the default interface view, as well as the distinct visual feedback provided during **hover** and **click** interactions.
 
 ### Default Color Scheme
 *(The standard, calm visual theme designed for everyday use.)*  
-![Default Color Scheme](images/default_gif.gif)
+![Default Color Scheme](images/default.png)
 
 ### High Contrast
 *(A specialized mode maximizing text and element visibility for users with visual impairments.)*  
-![High Contrast](images/highcontrast_gif.gif)
+![High Contrast](images/hc.png)
 
