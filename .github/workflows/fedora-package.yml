@@ -45,4 +45,4 @@ jobs:
           tag: refs/tags/v0.2.0
           overwrite: true
           draft: false
-          prerelease: true
+          prerelease: false
