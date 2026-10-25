@@ -1,6 +1,8 @@
 name: Fedora package
 on:
   workflow_dispatch: 
+  push:
+    tags: ["v*"]
 jobs:
   fedora-package:
     runs-on: ubuntu-latest
@@ -14,6 +16,10 @@ jobs:
         run: |
           dnf -y install rpmdevtools rpm-build python3-devel
           dnf -y builddep packaging/sweb.spec
+      - name: Update spec version
+        run: |
+          VERSION=0.2.0
+          sed "s/^Version:.*/Version:        ${VERSION}/" packaging/sweb.spec
       - name: Download sources
         run: |
           rpmdev-setuptree
@@ -30,14 +36,13 @@ jobs:
       - name: Build
         run: |
           rpmbuild -ba packaging/sweb.spec
-      - name: Upload binaries to release
+      - name: Upload artifact
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: /github/home/rpmbuild/RPMS/noarch/sweb-*.rpm
           file_glob: true
-          tag: refs/tags/v0.1.0
+          tag: refs/tags/v0.2.0
           overwrite: true
           draft: false
           prerelease: true
-          body: "Working release ${{github.ref}}"
