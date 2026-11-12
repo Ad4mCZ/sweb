@@ -3,7 +3,7 @@ Version:        0.1.0
 Release:        1%{?dist}
 Summary:        Simple web browser
 
-License:        MIT
+License:        GPLv3
 URL:            https://github.com/Ad4mCZ/sweb
 Source0:        %{url}/archive/refs/tags/v%{version}.tar.gz
 
