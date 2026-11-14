@@ -20,6 +20,7 @@ class Settings(JsonStore):
                 "search_url": "https://search.seznam.cz/?q={}",
                 # pozice tlacitka "Hledat" v Menu 2: "before" (pred zalozkami) nebo "after" (za zalozkami)
                 "search_button_position": "after",
+                "nav_height_ratio": 0.12,
             },
             file_label="konfiguračního souboru",
         )

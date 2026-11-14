@@ -5,7 +5,7 @@ from typing import Callable, Sequence
 from urllib.parse import quote_plus
 
 from PyQt6.QtCore import QEvent, QSize, Qt, QUrl
-from PyQt6.QtGui import QEnterEvent, QIcon, QMouseEvent
+from PyQt6.QtGui import QEnterEvent, QIcon, QMouseEvent, QGuiApplication
 from PyQt6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -218,6 +218,7 @@ class MainWindow(QMainWindow):
         # styl a barvy textu si ulozime, aby je mohly pouzit
         # _create_toolbar() a _add_button() pri stavbe obou menu
         self._nav_style = nav_stylesheet(theme, font_size)
+        self._icon_px = self._nav_icon_size()
         self._hover_text = theme["hover_text"]
         self._pressed_text = theme["pressed_text"]
 
@@ -257,6 +258,19 @@ class MainWindow(QMainWindow):
 
         # po spusteni je videt jen MENU 1, MENU 2 se zobrazi tlacitkem "Menu 2"
         self.bookmarks_toolbar.hide()
+
+    def _nav_icon_size(self) -> int:
+        """Velikost ikony tak, aby cele tlacitko melo vysku ~ nav_height_ratio * vyska obrazovky."""
+        screen = QGuiApplication.primaryScreen()
+        screen_h = screen.geometry().height() if screen else 1080
+        try:
+            ratio = float(self.settings.get("nav_height_ratio"))
+        except TypeError, ValueError:
+            ratio = 0.12
+        ratio = min(max(ratio, 0.05), 0.30)  # ochrana pred nesmyslnou hodnotou v JSON
+        total = int(screen_h * ratio)
+        # odecteme padding (2x10 px) a ramecek (2x2 px) z nav_stylesheet() v theme.py
+        return max(48, total - 24)
 
     def _create_toolbar(
         self,
@@ -334,8 +348,9 @@ class MainWindow(QMainWindow):
         btn.setIcon(QIcon(self.get_icon_path(icon_filename)))
         # tohle pak zakomentovat, aby tam nebyli popisky, jen ikonka
         # btn.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextUnderIcon)
-        btn.setIconSize(QSize(80, 80))
-        # tlacitka se rovnomerne roztahnou a vyplni celou sirku toolbaru
+        btn.setIconSize(
+            QSize(self._icon_px, self._icon_px)
+        )  # tlacitka se rovnomerne roztahnou a vyplni celou sirku toolbaru
         btn.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
         btn.clicked.connect(action)
         layout.addWidget(btn)
