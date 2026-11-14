@@ -5,7 +5,7 @@
 **Sweb** is a modular and accessible web browser designed specifically for seniors. Developed as part of a diploma thesis at the Faculty of Electrical Engineering and Communication, Brno University of Technology, the application is built with Python, PyQt6, and QtWebEngine. The browser focuses on eliminating common frustrations older adults face when navigating the modern web by providing a distraction-free, simplified, and safe environment.
 
 ## 🌟 Key Features
-* **Simplified Interface:** Large, clearly labeled buttons and an intuitive navigation bar tailored for reduced motor precision.
+* **Simplified Interface:** Large icon-only buttons and an intuitive navigation bar tailored for reduced motor precision. The interface contains no text, so it needs no translation.
 * **Kiosk Mode:** Fullscreen, frameless window execution prevents accidental application minimization, resizing, or exits.
 * **Built-in AdBlock:** An automatic network-level interceptor that blocks ads and tracking scripts, ensuring a clean reading experience and preventing core render crashes on heavy sites.
 * **Modular Architecture:** An extensible plugin system (`module_manager`) for easily integrating background features (like AdBlock) and UI extensions (like Magnifier (TBA)).
@@ -22,12 +22,13 @@ The browser is fully customizable via JSON files, keeping user data and preferen
 
 | Key | Default | Description |
 |-----|---------|-------------|
-| `ui_font_size` | `24` | Font size (in `px`) of button labels in the navigation bar. |
+| `ui_font_size` | `24` | Font size (in `px`) of UI text (error dialog). |
 | `web_zoom_factor` | `1.5` | Default zoom level for web pages (`1.0` = 100%, `1.5` = 150%). |
 | `color_theme` | `"default"` | Visual theme of the navigation bar: `"default"` or `"high_contrast"`. |
 | `home_url` | `"https://www.seznam.cz"` | Initial page loaded on startup and when navigating home. |
 | `search_url` | `"https://search.seznam.cz/?q={}"` | Search engine URL template (`{}` is replaced with the URL-encoded query). |
 | `search_button_position` | `"after"` | Position of the Search button in Menu 2 relative to bookmarks: `"before"` or `"after"`. |
+| `nav_height_ratio` | `0.12` | Navigation bar height as a fraction of screen height. |
 
 Example `config.json`:
 ```json
@@ -37,7 +38,8 @@ Example `config.json`:
     "color_theme": "default",
     "home_url": "https://www.seznam.cz",
     "search_url": "https://search.seznam.cz/?q={}",
-    "search_button_position": "after"
+    "search_button_position": "after",
+    "nav_height_ratio": 0.12
 }
 ```
 

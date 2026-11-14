@@ -5,7 +5,7 @@
 **Sweb** je modulární a přístupný webový prohlížeč navržený speciálně pro seniory. Aplikace byla vyvinuta jako součást diplomové práce na Fakultě elektrotechniky a komunikačních technologií Vysokého učení technického v Brně (FEKT VUT) s využitím Pythonu, PyQt6 a QtWebEngine. Prohlížeč se zaměřuje na odstranění běžných frustrací, kterým starší dospělí čelí při procházení moderního webu, a to poskytnutím jednoduchého a bezpečného prostředí bez rušivých elementů.
 
 ## 🌟 Hlavní funkce
-* **Zjednodušené rozhraní:** Velká, jasně označená tlačítka a intuitivní navigační lišta přizpůsobená pro sníženou motorickou přesnost.
+* **Zjednodušené rozhraní:** Velká tlačítka pouze s ikonou a intuitivní navigační lišta přizpůsobená pro sníženou motorickou přesnost. Rozhraní neobsahuje žádný text, takže není nutné je překládat.
 * **Kioskový režim (Kiosk Mode):** Spuštění v režimu celé obrazovky bez rámečku zabraňuje nechtěnému minimalizování, změně velikosti nebo ukončení aplikace.
 * **Integrovaný AdBlock:** Automatický síťový filtr, který blokuje reklamy a sledovací skripty, čímž zajišťuje čistý zážitek ze čtení a předchází pádům vykreslovacího jádra na náročných stránkách.
 * **Modulární architektura:** Rozšiřitelný systém doplňků (`module_manager`) pro snadnou integraci funkcí na pozadí (jako AdBlock) a rozšíření uživatelského rozhraní (jako připravovaná Lupa).
@@ -22,12 +22,14 @@ Prohlížeč je plně přizpůsobitelný pomocí JSON souborů, což udržuje u�
 
 | Klíč | Výchozí hodnota | Popis |
 |------|-----------------|-------|
-| `ui_font_size` | `24` | Velikost písma (v `px`) popisků tlačítek v navigační liště. |
+| `ui_font_size` | `24` | Velikost písma (v `px`) textu rozhraní (chybové okno). |
 | `web_zoom_factor` | `1.5` | Měřítko přiblížení webových stránek (`1.0` = 100 %, `1.5` = 150 %). |
 | `color_theme` | `"default"` | Barevné schéma navigační lišty: `"default"` nebo `"high_contrast"`. |
 | `home_url` | `"https://www.seznam.cz"` | Výchozí domovská stránka načtená po spuštění prohlížeče. |
 | `search_url` | `"https://search.seznam.cz/?q={}"` | Šablona URL vyhledávače (`{}` se nahradí hledaným výrazem). |
 | `search_button_position` | `"after"` | Pozice tlačítka **Hledat** v Menu 2 vůči záložkám: `"before"` (před) nebo `"after"` (za). |
+| `nav_height_ratio` | `0.12` | Výška navigační lišty jako podíl výšky obrazovky. |
+
 
 Příklad `config.json`:
 ```json
@@ -37,7 +39,9 @@ Příklad `config.json`:
     "color_theme": "default",
     "home_url": "https://www.seznam.cz",
     "search_url": "https://search.seznam.cz/?q={}",
-    "search_button_position": "after"
+    "search_button_position": "after",
+    "nav_height_ratio": 0.12
+    
 }
 ```
 
