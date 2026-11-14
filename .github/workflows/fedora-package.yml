@@ -7,8 +7,12 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    strategy:
+      max-parallel: 1
+      matrix:
+        fedora: ["latest", "44"]
     container:
-      image: fedora:latest
+      image: fedora:${{ matrix.fedora }}
     steps:
       - uses: actions/checkout@v7
       - name: Update spec version
