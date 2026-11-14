@@ -14,9 +14,7 @@ from PyQt6.QtWidgets import (
 from .theme import error_dialog_stylesheet
 
 
-def show_critical_error(
-    title: str, message: str, error_detail: str = ""
-) -> NoReturn:
+def show_critical_error(title: str, message: str, error_detail: str = "") -> NoReturn:
     """Zobrazi celoobrazovkovou chybovou obrazovku s vycentrovanymi texty a tlacitky
     a po potvrzeni bezpečně ukonci aplikaci.
 
@@ -56,7 +54,7 @@ def show_critical_error(
     layout.addWidget(msg_label)
 
     # volitelny technicky detail (ve vychozim stavu skryty, lze rozbalit tlacitkem)
-    detail_label = QLabel(f"Technický detail chyby:\n{error_detail}")
+    detail_label = QLabel(f"Technical details:\n{error_detail}")
     detail_label.setObjectName("errorDetail")
     detail_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
     detail_label.setWordWrap(True)
@@ -68,19 +66,17 @@ def show_critical_error(
     btn_layout.addStretch(1)
 
     if error_detail:
-        detail_btn = QPushButton("Zobrazit podrobnosti")
+        detail_btn = QPushButton("Show details")
 
         def toggle_detail() -> None:
             is_visible = detail_label.isVisible()
             detail_label.setVisible(not is_visible)
-            detail_btn.setText(
-                "Skrýt podrobnosti" if not is_visible else "Zobrazit podrobnosti"
-            )
+            detail_btn.setText("Hide details" if not is_visible else "Show details")
 
         detail_btn.clicked.connect(toggle_detail)
         btn_layout.addWidget(detail_btn)
 
-    exit_btn = QPushButton("Ukončit")
+    exit_btn = QPushButton("Quit")
     exit_btn.setObjectName("exitBtn")
     exit_btn.clicked.connect(dialog.accept)
     btn_layout.addWidget(exit_btn)

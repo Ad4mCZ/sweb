@@ -42,7 +42,7 @@ class Bookmarks(JsonStore):
                     {"name": "Lékárna", "url": "https://www.lekarna.cz"},
                 ],
             },
-            file_label="souboru se záložkami",
+            file_label="bookmarks file",
         )
 
     def get_first_menu(self) -> list[dict[str, str]]:
@@ -59,7 +59,7 @@ class Bookmarks(JsonStore):
     ) -> str:
         """Vrati cestu k ikone pro danou URL.
 
-        Pokud ikona jeste neni stazena na disku, ihned vrati fallback_icon 
+        Pokud ikona jeste neni stazena na disku, ihned vrati fallback_icon
         a spusti stahovani na pozadi pres QNetworkAccessManager.
         Po dostazeni ulozi soubor a pripadne zavola callback on_downloaded(icon_path).
         """

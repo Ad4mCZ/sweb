@@ -18,7 +18,7 @@ class JsonStore:
       nebo jen zaloguje chybu a pouzije vychozi hodnoty (critical=False)
     """
 
-    ERROR_TITLE = "Kritická chyba konfigurace"
+    ERROR_TITLE = "Critical configuration error"
 
     def __init__(
         self,
@@ -51,11 +51,14 @@ class JsonStore:
     def _handle_error(self, action: str, error: Exception) -> None:
         log.error("Error while %s %s: %s", action, self.file_path, error)
         if self.critical:
-            verb = "čtení" if action == "reading" else "ukládání"
+            verb = "reading" if action == "reading" else "saving"
             # show_critical_error ukonci aplikaci
             show_critical_error(
                 title=self.ERROR_TITLE,
-                message=f"Chyba při {verb} {self.file_label}!\n\nAplikaci nelze bezpečně spustit a bude ukončena.",
+                message=(
+                    f"Error while {verb} the {self.file_label}!\n\n"
+                    "The application cannot be started safely and will now quit."
+                ),
                 error_detail=str(error),
             )
 
@@ -69,7 +72,9 @@ class JsonStore:
             with open(self.file_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
             if not isinstance(data, dict):
-                raise ValueError("Kořenový prvek JSON souboru musí být objekt (slovník).")
+                raise ValueError(
+                    "The root element of the JSON file must be an object (dictionary)."
+                )
         except Exception as e:
             self._handle_error("reading", e)
             return self._default_copy()

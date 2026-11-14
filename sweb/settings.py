@@ -22,5 +22,5 @@ class Settings(JsonStore):
                 "search_button_position": "after",
                 "nav_height_ratio": 0.12,
             },
-            file_label="konfiguračního souboru",
+            file_label="configuration file",
         )
