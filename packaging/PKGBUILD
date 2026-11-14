@@ -1,6 +1,6 @@
 # Maintainer: Your Name <272843@vutbr.cz>
 pkgname='sweb'
-pkgver=0.3.0
+pkgver=0.3.1
 pkgrel=1
 pkgdesc="Web browser for seniors"
 arch=('any')

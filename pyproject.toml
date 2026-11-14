@@ -1,6 +1,6 @@
 [project]
 name = "sweb"
-version = "0.3.0"
+version = "0.3.1"
 description = "Web browser for seniors"
 authors = [
     {name = "Adam Biciste"}
