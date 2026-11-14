@@ -35,23 +35,24 @@ class SearchWidget(QWidget):
         self,
         on_submit: Callable[[], object],
         on_cancel: Callable[[], object],
+        search_icon: QIcon,
+        cancel_icon: QIcon,
+        theme: dict[str, str],
+        font_size: int,
+        icon_size: int = 80,
         parent: QWidget | None = None,
     ) -> None:
         super().__init__(parent)
         self.setObjectName("searchScreen")
         # nutne u QWidget, aby Qt vykreslilo barvu pozadi ze stylesheetu
         self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
-        self.setStyleSheet(search_dialog_stylesheet())
+        self.setStyleSheet(search_dialog_stylesheet(theme, font_size))
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(80, 60, 80, 60)
         layout.setSpacing(30)
 
         layout.addStretch(1)
-
-        label = QLabel("Co chcete na internetu najít?")
-        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(label)
 
         self.input_field = QLineEdit()
         self.input_field.returnPressed.connect(on_submit)
@@ -60,12 +61,18 @@ class SearchWidget(QWidget):
         btn_layout = QHBoxLayout()
         btn_layout.setSpacing(20)
 
-        cancel_btn = QPushButton("Zrušit")
+        cancel_btn = SeniorButton(theme["hover_text"], theme["pressed_text"])
+        cancel_btn.setIcon(cancel_icon)
+        cancel_btn.setIconSize(QSize(icon_size, icon_size))
         cancel_btn.clicked.connect(on_cancel)
 
-        search_btn = QPushButton("Hledat")
-        search_btn.setObjectName("searchBtn")
+        search_btn = SeniorButton(theme["hover_text"], theme["pressed_text"])
+        search_btn.setIcon(search_icon)
+        search_btn.setIconSize(QSize(icon_size, icon_size))
         search_btn.clicked.connect(on_submit)
+
+        for btn in (cancel_btn, search_btn):
+            btn.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
         btn_layout.addWidget(cancel_btn)
         btn_layout.addWidget(search_btn)
@@ -152,9 +159,14 @@ class MainWindow(QMainWindow):
 
         # QStackedWidget prepina mezi prohlizecem a vyhledavaci obrazovkou
         # v hlavni casti okna, zatimco horni lista s tlacitky zustava viditelna
+        theme = get_theme(self.settings.get("color_theme"))
         self.search_widget = SearchWidget(
             on_submit=self._submit_search,
             on_cancel=self._close_search,
+            search_icon=QIcon(self.get_icon_path("search.png")),
+            cancel_icon=QIcon(self.get_icon_path("cancel.png")),
+            theme=theme,
+            font_size=self.settings.get("ui_font_size"),
             parent=self,
         )
         self.central_stack = QStackedWidget(self)

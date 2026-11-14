@@ -104,20 +104,18 @@ def _accent_button_rule(selector: str) -> str:
     """
 
 
-def search_dialog_stylesheet() -> str:
-    """Stylesheet pro celoobrazovkovou vyhledavaci stranku (SearchWidget):
-    obri pismo, siroke textove pole pres obrazovku a velka tlacitka.
+def search_dialog_stylesheet(theme: dict[str, str], font_size: int) -> str:
+    """Stylesheet pro celoobrazovkovou vyhledavaci stranku (SearchWidget).
+
+    Tlacitka jsou stejna jako v navigaci (QToolButton), proto se pouziva
+    primo nav_stylesheet() - barvy, :hover i :pressed jsou tedy shodne.
+    Textove pole zustava bile s cernym textem kvuli citelnosti.
     """
     c = DIALOG_COLORS
-    return f"""
+    return (
+        f"""
         QWidget#searchScreen {{
             background-color: {c["bg"]};
-        }}
-        QLabel {{
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: {c["text"]};
         }}
         QLineEdit {{
             font-size: 32px;
@@ -126,15 +124,14 @@ def search_dialog_stylesheet() -> str:
             background-color: {c["input_bg"]};
             color: {c["text"]};
         }}
-        QPushButton {{
-            font-size: 26px;
-            font-weight: bold;
+    """
+        + nav_stylesheet(theme, font_size)
+        + """
+        QToolButton {
             padding: 20px;
-            background-color: {c["button_bg"]};
-            border: 2px solid {c["border"]};
-            color: {c["text"]};
-        }}
-    """ + _accent_button_rule("QPushButton#searchBtn")
+        }
+    """
+    )
 
 
 def error_dialog_stylesheet() -> str:
