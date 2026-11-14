@@ -1,5 +1,5 @@
 Name:           sweb
-Version:        0.1.0
+Version:        0.3.0
 Release:        1%{?dist}
 Summary:        Simple web browser
 
