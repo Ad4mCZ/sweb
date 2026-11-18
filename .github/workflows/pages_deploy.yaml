@@ -16,6 +16,7 @@ jobs:
     container: archlinux:latest
     env:
       GNUPGHOME: /temp
+      GH_TOKEN: ${{github.token}}
     steps:
     - name: Prepare system
       run: |
