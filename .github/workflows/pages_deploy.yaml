@@ -85,7 +85,9 @@ jobs:
       - name: Build database
         env:
           GPG_KEY_ID: ${{secrets.GPG_KEY_ID}}
+          GPG_PUBLIC_KEY: ${{secrets.GPG_PUBLIC_KEY}}
         run: |
+          echo "$GPG_PUBLIC_KEY" > release/fedora/sweb.asc
           dir=release/fedora/${{matrix.version}}
           createrepo_c "$dir"
           gpg --batch --local-user "$GPG_KEY_ID" --detach-sign --armor "$dir/repodata/repomd.xml"
