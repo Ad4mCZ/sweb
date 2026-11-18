@@ -1,0 +1,39 @@
+app-id: io.github.Ad4mCZ.sweb
+runtime: org.kde.Platform
+runtime-version: "6.9"
+sdk: org.kde.Sdk
+base: com.riverbankcomputing.PyQt.BaseApp
+base-version: "6.9"
+command: sweb
+
+finish-args:
+  - --share=ipc
+  - --share=network
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --socket=pulseaudio
+  - --device=dri
+
+cleanup-commands:
+  - /app/cleanup-BaseApp.sh
+
+modules:
+  - name: poetry-dependencies
+    buildsystem: simple
+    build-commands:
+      - pip3 install --no-index --find-links="file://${PWD}" --prefix=${FLATPAK_DEST} poetry-core
+    sources:
+      - type: file
+        url: https://files.pythonhosted.org/packages/b7/25/7ed0a2ea4fe12f7fd0394387b5debbcd6fdbd06e5ac9daab96ba11471da8/poetry_core-2.5.0-py3-none-any.whl
+        sha256: 98ee465b66f7e14bb9fbe68fb5e00d0cff184f036993ec94610ae4b5612f3add
+
+  - name: sweb
+    buildsystem: simple
+    build-commands:
+      - pip3 install --no-index --no-build-isolation --prefix=${FLATPAK_DEST} .
+      - install -Dm644 sweb.desktop /app/share/applications/io.github.Ad4mCZ.sweb.desktop
+      - install -Dm644 sweb/icons/* -t /app/share/icons/sweb
+    sources:
+      - type: git
+        url: https://github.com/Ad4mCZ/sweb.git
+        tag: v0.3.1
