@@ -1,0 +1,71 @@
+name: Deploy packages to pages
+
+on: 
+  workflow_run:
+    workflows: ["Arch package", "Fedora package"]
+    types: [completed]
+  workflow_dispatch: 
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  arch-repository:
+    runs-on: ubuntu-latest
+    container: archlinux:lates
+    env:
+      GNUPGHOME: /temp
+    steps:
+    - name: Prepare system
+      run: |
+        pacman -Syu --noconfirm github-cli gnupg
+    - name: Import keys
+      env:
+        GPG_PRIVATE_KEY: ${{secrets.GPG_PRIVATE_KEY}}
+      run: |
+        mkdir -m 700 "$GNUPGHOME"
+        echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+    - name: Get built packages
+      run: |
+        mkdir -p release/arch
+        for tag in $(gh release list --repo "{{github.repository}}" --limit 100 --json tagName -q '.[].tagName'); do
+          gh release download "$tag" --repo "${{github.repository}}" \ 
+            --pattern '*.pkg.tar.zst*' --dir release/arch --skip-existing || true
+        done
+    - name: Build database
+      env:
+        GPG_KEY_ID: ${{secrets.GPG_KEY_ID}}
+      run: |
+        cd release/arch
+        repo-add --sign --key "$GPG_KEY_ID" sweb.db.tar.zst *.pkg.tar.zst
+        for f in sweb.db sweb.db.sig sweb.files sweb.files.sig; do
+          cp --remove-destination "$(readlink -f $f)" $f
+        done
+        cd ../..
+        gpg --armor --export "$GPG_KEY_ID" > release/sweb.asc
+    - uses: actions/upload-artifact@v4
+      with:
+        name: repository-arch
+        path: release/
+  deploy:
+    needs: [arch-repository]
+    runs-on: ubuntu-latest
+    environment: 
+      name: github-pages
+      url: ${{steps.deployment.outputs.page_url}}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: repository-*
+          path: site
+          merge-multiple: true
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: release/
+      - name: Deploy pages
+        id: deployment
+        uses: actions/deploy-pages@v5
+  
+        
