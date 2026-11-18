@@ -46,7 +46,7 @@ jobs:
         run: |
           dnf install -y rpm-sign gnupg2
           mkdir -m 700 -p "$GNUPGHOME"
-          echo "$GPG_PRVATE_KEY" | gpg --batch --import
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --import
       - name: Download sources
         run: |
           rpmdev-setuptree
