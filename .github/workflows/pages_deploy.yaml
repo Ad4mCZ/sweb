@@ -13,7 +13,7 @@ concurrency:
 jobs:
   arch-repository:
     runs-on: ubuntu-latest
-    container: archlinux:lates
+    container: archlinux:latest
     env:
       GNUPGHOME: /temp
     steps:
