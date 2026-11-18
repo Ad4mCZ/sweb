@@ -2,6 +2,12 @@ name: Arch package
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag for build"
+        required: true
+        type: string
 jobs:
   create-package:
     runs-on: ubuntu-latest
@@ -10,10 +16,25 @@ jobs:
     container:
       image: archlinux:latest
     steps:
-    - uses: actions/checkout@v7
-    - name: Update pkgver
+    - name: Get tag
+      id: tag
+      env:
+        INPUT_TAG: ${{inputs.tag}}
+        REF_NAME: ${{github.ref_name}}
       run: |
-        sed -i "0,/^pkgver=/s/^pkgver=.*/pkgver=${GITHUB_REF_NAME#v}/" packaging/PKGBUILD
+        TAG="{INPUT_TAG:-$REF_NAME}"
+        echo "name=$TAG" >> "$GITHUB_OUTPUT"
+        echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+    - uses: actions/checkout@v7
+      env:
+        TAG: ${{steps.tag.outputs.name}}
+      with:
+        ref: ${TAG}
+    - name: Update pkgver
+      env:
+        VER: ${{steps.tag.outputs.version}}
+      run: |
+        sed -i "0,/^pkgver=/s/^pkgver=.*/pkgver=${VER}/" packaging/PKGBUILD
     - name: Prepare system
       run: |
         pacman -Sy base-devel sudo --noconfirm
@@ -28,11 +49,13 @@ jobs:
         sudo -u nobody makepkg --noconfirm 
     - name: Upload artifact
       uses: svenstaro/upload-release-action@v2
+      env:
+        TAG: ${{steps.tag.outputs.name}}
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: packaging/sweb-*.pkg.tar.zst
         file_glob: true
-        tag: ${{github.ref}}
+        tag: ${TAG}
         overwrite: true
         draft: false
         prerelease: false
