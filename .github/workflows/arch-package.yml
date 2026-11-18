@@ -33,7 +33,7 @@ jobs:
       run: |
         mkdir -m 700 /temp
         chown nobody /temp
-        echo "${{secrets.GPG_PRIVATE_KEY}}" | sudo -u nobodu GNUPGHOME=/temp gpg --batch --import
+        echo "${{secrets.GPG_PRIVATE_KEY}}" | sudo -u nobody GNUPGHOME=/temp gpg --batch --import
     - uses: actions/checkout@v7
       with:
         ref: ${{steps.tag.outputs.name}}
