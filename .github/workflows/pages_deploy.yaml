@@ -53,8 +53,48 @@ jobs:
       with:
         name: repository-arch
         path: release/
+
+        
+  fedora-repository:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: ["latest", "44"]
+    container: fedora:${{matrix.version}}
+    env:
+      GNUPGHOME: /temp
+      GH_TOKEN: ${{github.token}}
+    steps:
+      - name: Prepare system
+        run: |
+          dnf install -y gh createrepo_c gnupg2
+      - name: Import keys
+        env:
+          GPG_PRIVATE_KEY: ${{secrets.GPG_PRIVATE_KEY}}
+        run: |
+          mkdir -m 700 "$GNUPGHOME"
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+      - name: Get built packages
+        run: |
+          dir=release/fedora/${{matrix.version}}
+          mkdir -p "$dir"
+          for tag in $(gh release list --repo "${{github.repository}}" --limit 100 --json tagName -q '.[].tagName'); do
+            gh release download "$tag" --repo "${{github.repository}}" --pattern '*.fc${{matrix.version}}.*.rpm' --dir "$dir" --skip-existing || true
+          done
+          rm -rf "$dir"/*.src.rpm
+      - name: Build database
+        env:
+          GPG_KEY_ID: ${{secrets.GPG_KEY_ID}}
+        run: |
+          dir=release/fedora/${{matrix.version}}
+          createrepo_c "$dir"
+          gpg --batch --local-user "$GPG_KEY_ID" --detach-sign --armor "$dir/repodata/repomd.xml"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: repository-fedora-${{matrix.version}}
+          path: release/
   deploy:
-    needs: [arch-repository]
+    needs: [arch-repository, fedora-repository]
     runs-on: ubuntu-latest
     environment: 
       name: github-pages
