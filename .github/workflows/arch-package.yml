@@ -16,28 +16,26 @@ jobs:
     container:
       image: archlinux:latest
     steps:
+    - name: Prepare system
+      run: |
+        pacman -Sy base-devel sudo --noconfirm
     - name: Get tag
       id: tag
       env:
         INPUT_TAG: ${{inputs.tag}}
         REF_NAME: ${{github.ref_name}}
       run: |
-        TAG="{INPUT_TAG:-$REF_NAME}"
+        TAG="${INPUT_TAG:-$REF_NAME}"
         echo "name=$TAG" >> "$GITHUB_OUTPUT"
         echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
     - uses: actions/checkout@v7
-      env:
-        TAG: ${{steps.tag.outputs.name}}
       with:
-        ref: ${TAG}
+        ref: ${{steps.tag.outputs.name}}
     - name: Update pkgver
       env:
         VER: ${{steps.tag.outputs.version}}
       run: |
         sed -i "0,/^pkgver=/s/^pkgver=.*/pkgver=${VER}/" packaging/PKGBUILD
-    - name: Prepare system
-      run: |
-        pacman -Sy base-devel sudo --noconfirm
     - name: Get build dependencies
       run: |
         source packaging/PKGBUILD
@@ -49,13 +47,11 @@ jobs:
         sudo -u nobody makepkg --noconfirm 
     - name: Upload artifact
       uses: svenstaro/upload-release-action@v2
-      env:
-        TAG: ${{steps.tag.outputs.name}}
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: packaging/sweb-*.pkg.tar.zst
         file_glob: true
-        tag: ${TAG}
+        tag: ${{steps.tag.outputs.name}}
         overwrite: true
         draft: false
         prerelease: false
