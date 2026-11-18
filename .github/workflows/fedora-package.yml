@@ -2,6 +2,12 @@ name: Fedora package
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag for build"
+        required: true
+        type: string
 jobs:
   fedora-package:
     runs-on: ubuntu-latest
@@ -14,15 +20,25 @@ jobs:
     container:
       image: fedora:${{ matrix.fedora }}
     steps:
+      - name: Get tag
+        id: tag
+        env:
+          INPUT_TAG: ${{inputs.tag}}
+          REF_NAME: ${{github.ref_name}}
+        run: |
+          TAG="${INPUT_TAG:-$REF_NAME}"
+          echo "name=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v7
       - name: Update spec version
+        env:
+          VER: ${{steps.tag.outputs.version}}
         run: |
-          sed -i "0,/^Version:/s/^Version:.*/Version:        ${GITHUB_REF_NAME#v}/" packaging/sweb.spec
+          sed -i "0,/^Version:/s/^Version:.*/Version:        ${VER}/" packaging/sweb.spec
       - name: Prepare dependencies
         run: |
           dnf -y install rpmdevtools rpm-build python3-devel pyproject-rpm-macros
           dnf -y builddep packaging/sweb.spec
-
       - name: Download sources
         run: |
           rpmdev-setuptree
@@ -45,7 +61,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: /github/home/rpmbuild/RPMS/noarch/sweb-*.rpm
           file_glob: true
-          tag: ${{github.ref}}
+          tag: ${{steps.tag.outputs.name}}
           overwrite: true
           draft: false
           prerelease: false
