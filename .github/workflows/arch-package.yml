@@ -8,6 +8,7 @@ on:
         description: "Tag for build"
         required: true
         type: string
+
 jobs:
   create-package:
     runs-on: ubuntu-latest
@@ -28,6 +29,11 @@ jobs:
         TAG="${INPUT_TAG:-$REF_NAME}"
         echo "name=$TAG" >> "$GITHUB_OUTPUT"
         echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+    - name: Import Keys
+      run: |
+        mkdir -m 700 /temp
+        chown nobody /temp
+        echo "${{secrets.GPG_PRIVATE_KEY}}" | sudo -u nobodu GNUPGHOME=/temp gpg --batch --import
     - uses: actions/checkout@v7
       with:
         ref: ${{steps.tag.outputs.name}}
@@ -44,12 +50,12 @@ jobs:
       run: |
         chown -R nobody packaging
         cd packaging
-        sudo -u nobody makepkg --noconfirm 
+        sudo -u nobody GNUPGHOME=/temp makepkg --noconfirm --sign --key ${{secrets.GPG_KEY_ID}}
     - name: Upload artifact
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: packaging/sweb-*.pkg.tar.zst
+        file: packaging/*.pkg.tar.zst*
         file_glob: true
         tag: ${{steps.tag.outputs.name}}
         overwrite: true
