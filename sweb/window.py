@@ -61,20 +61,20 @@ class SearchWidget(QWidget):
         btn_layout = QHBoxLayout()
         btn_layout.setSpacing(20)
 
-        cancel_btn = SeniorButton(theme["hover_text"], theme["pressed_text"])
-        cancel_btn.setIcon(cancel_icon)
-        cancel_btn.setIconSize(QSize(icon_size, icon_size))
-        cancel_btn.clicked.connect(on_cancel)
+        # cancel_btn = SeniorButton(theme["hover_text"], theme["pressed_text"])
+        # cancel_btn.setIcon(cancel_icon)
+        # cancel_btn.setIconSize(QSize(icon_size, icon_size))
+        # cancel_btn.clicked.connect(on_cancel)
 
         search_btn = SeniorButton(theme["hover_text"], theme["pressed_text"])
         search_btn.setIcon(search_icon)
         search_btn.setIconSize(QSize(icon_size, icon_size))
         search_btn.clicked.connect(on_submit)
 
-        for btn in (cancel_btn, search_btn):
-            btn.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        #for btn in (search_btn):
+        search_btn.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
-        btn_layout.addWidget(cancel_btn)
+        # btn_layout.addWidget(cancel_btn)
         btn_layout.addWidget(search_btn)
 
         layout.addLayout(btn_layout)
