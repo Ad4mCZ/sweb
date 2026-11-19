@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: ["45", "44"]
+        version: ["45", "44", "43"]
     container: fedora:${{matrix.version}}
     env:
       GNUPGHOME: /temp
