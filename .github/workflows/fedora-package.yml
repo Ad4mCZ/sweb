@@ -16,7 +16,7 @@ jobs:
     strategy:
       max-parallel: 1
       matrix:
-        fedora: ["45", "44"]
+        fedora: ["45", "44", "43"]
     container:
       image: fedora:${{ matrix.fedora }}
     steps:
